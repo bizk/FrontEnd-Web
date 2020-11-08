@@ -41,7 +41,8 @@ function CrearCuenta (props){
                 domicilio: (cliente.domicilio),
                 piso:  (cliente.piso),
                 date: (cliente.fechanac),
-                tipoCuenta: (tipoCuenta),
+                tipoCuenta: "",
+                fondo: "",
             }}
             validationSchema={Yup.object().shape({
                 
@@ -69,6 +70,11 @@ function CrearCuenta (props){
                 piso: Yup.string()
                 .required('El campo es obligatorio (*)'),
                 date: Yup.string()
+                    .required('El campo es obligatorio (*)'),
+                tipoCuenta: Yup.string()
+                    .required('El campo es obligatorio (*)'),
+                fondo: Yup.string()
+                    .matches(Number,'Ingrese únicamente números')
                     .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
@@ -114,7 +120,6 @@ function CrearCuenta (props){
                     </div>
                     <div className="form-group">
                         <label htmlFor="date">Fecha de nacimiento</label>
-                    <form  className={classes.container} noValidate>
                 <Field
                     readonly="readonly"
                     name="date"
@@ -127,16 +132,23 @@ function CrearCuenta (props){
                 <ErrorMessage name="date" component="div" className="invalid-feedback" />
                 <div className="form-group">
                     <label htmlFor="tipoCuenta" style={{marginTop:"15px"}}>Tipo de cuenta</label>
-                    <select
+                    <Field as="select"
                         name="tipoCuenta"
                         style={{ display: 'block',width:"650px", height:"40px"}}
-                        onValueChange={(value) => setTipoCuenta(value)}
+                        className={'form-control' + (errors.tipoCuenta && touched.tipoCuenta? ' is-invalid' : '')}
                     >
                         <option value="" label="Seleccione el tipo de cuenta" />
                         <option value="ahorro" label="Caja de ahorro" />
                         <option value="corriente" label="Cuenta corriente" />
-                    </select>
+                    </Field>
+                    <ErrorMessage name="tipoCuenta" component="div" className="invalid-feedback" />
                 </div>
+                <div className="form-group">
+                        <label htmlFor="fondo">Fondo descubierto</label>
+                        <Field name="fondo" type="text" className={'form-control' + (errors.fondo && touched.fondo? ' is-invalid' : '')} />
+                        <ErrorMessage name="fondo" component="div" className="invalid-feedback" />
+                    </div>
+                    <form  className={classes.container} noValidate>
                 </form>
                 </div>
                     <div className="form-group">
