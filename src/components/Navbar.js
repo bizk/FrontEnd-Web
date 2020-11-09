@@ -1,6 +1,6 @@
 import React, {useState}from 'react';
 import './Navbar.css';
-import { Navbar, Nav, Form, Button } from 'react-bootstrap';
+import { Navbar, Nav, Button } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import history from './../history';
@@ -73,7 +73,7 @@ const Navigation = (props) => {
       </CardActionArea>
     </div>
     <div class="col-md-4">
-    <CardActionArea   onClick={() => history.push('/ResumenCuenta')}>
+    <CardActionArea   onClick={() => history.push('/BuscarResumenCuenta')}>
       <div class="card card-5" style={{padding:"14px"}}>
         <h6 >Resumen de cuenta</h6>
         <p style={{marginBottom:"65px"}}>Al seleccionar esta opción podrá tener acceso al resumen de cuenta de uno de nuestros clientes.</p>

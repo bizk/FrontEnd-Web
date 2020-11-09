@@ -51,7 +51,7 @@ export default class Home extends Component {
       </CardActionArea>
     </div>
     <div class="col-md-3">
-    <CardActionArea   onClick={() => history.push('/ResumenCuenta')}>
+    <CardActionArea   onClick={() => history.push('/BuscarResumenCuenta')}>
       <div class="card card-5" style={{padding:"10px"}}>
         <h6 >Resumen de cuenta</h6>
         <p >Al seleccionar esta opción podrá tener acceso al resumen de cuenta de uno de nuestros clientes.</p>

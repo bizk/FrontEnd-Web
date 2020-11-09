@@ -4,26 +4,16 @@ import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import * as Yup from 'yup';
+import { Router, Switch, Route, Link } from "react-router-dom";
 import SearchIcon from '@material-ui/icons/Search';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-function BuscarDeshabilitarCliente (){
+import history from '../history';
+function BuscarCrearCuenta (){
     const [cliente, setCliente]=useState();
-    const [open, setOpen] = useState(false);
-    const handleClickOpen = () => {
-        setOpen(true);
-      };
-      const handleClose = () => {
-        setOpen(false);
-      };
-      const handleClosed = () => {
-        setOpen(false);
-        setCliente();
-        
-    };
+    const [currentAccount, setCurrentAccount] = useState();
+    const [selectAccount, setSelectedAccount] = useState();
+    const changeAccount = (newAccount) => {
+        setSelectedAccount(newAccount)
+    }
     const useStyles=makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -52,15 +42,15 @@ function BuscarDeshabilitarCliente (){
             fontWeight: 'bold'
         }
       }));
-      const classes = useStyles();
-        const Number = /^[0-9]+$/;
+    const Number = /^[0-9]+$/;
+    const classes = useStyles();
         return (
             <div className="Modificar">
                 <Navigation />
             <div className={classes.modify}>
-                <div><h2 className={classes.title}>Deshabilitar cliente</h2>
+                <div><h2 className={classes.title}>Resumen cuenta bancaria</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                    <div className={classes.modify}>
+                        <div className={classes.modify}>
                         <h7 className={classes.title1}>Buscar cliente por DNI </h7>
                         <Formik 
                         initialValues={{
@@ -89,55 +79,59 @@ function BuscarDeshabilitarCliente (){
                                 resp2: "River Plate",
                                 preg3: "Nombre de mascota",
                                 resp3: "Lola",
+                                cuentas: {
+                                    cajaahorro:"5565418547654",
+                                    cuentacorriente: "",
+                                }
                                 };
+                            if(cliente.cuentas.cuentacorriente==""){
+                                cliente.cuentas.cuentacorriente=" -"
+                            }
+                            if(cliente.cuentas.cajaahorro==""){
+                                cliente.cuentas.cajaahorro="-"
+                            }
                             console.log(cliente);
                             setCliente(cliente);
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
-                                 <div class="row">
-                                <Field name="Buscador" type="text" className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
+                                <div class="row">
+                                <Field name="Buscador" type="text"  className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
                                 <button type="submit" className="btn btn-primary col-sm-1 col-lg-1 ml-lg-2" style={{backgroundColor: "#BF6D3A"}}><SearchIcon /></button>
-                                <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />  
-                                </div>                          
+                                <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />
+                                </div>
                             </Form>
                          )}
                         />
                         {cliente && (
                         <div className={classes.title1}>
-                            <h7>Nombre: </h7>{cliente.nombre}<br />
+                            <h7 >Nombre: </h7>{cliente.nombre}<br />
                             <h7>Apellido: </h7> {cliente.apellido} <br />
-                            <h7>DNI: </h7>{cliente.dni}<br />
+                            <h7 >DNI: </h7>{cliente.dni}<br />
                             <h7>CUIT: </h7>{cliente.cuit}<br />
-                            <Button onClick={handleClickOpen} style={{backgroundColor:"#BF6D3A",color:"white",marginTop:"15px"}}> Deshabilitar cliente</Button>
+                            <h7>Cuenta/s: </h7><br /><h7>Caja de ahorro: </h7>
+                            {cliente.cuentas.cajaahorro}<br /><h7>Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
+                            <form>
+                                <h7>Seleccione una cuenta: </h7>
+                                <select
+                                    onChange={(event) => changeAccount(event.target.value)}
+                                    value={currentAccount}
+                                >
+                                    <option value="">Seleccione una cuenta</option>
+                                    <option value="ahorro">{cliente.cuentas.cajaahorro}</option>
+                                    <option value="corriente">{cliente.cuentas.cuentacorriente}</option>
+                                </select>
+                            </form>
+                                <Link to={{
+                                    pathname: '/ResumenCuenta',
+                                    state:cliente}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>
                          </div>
                         )}
-                         <Dialog
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
-                        <DialogTitle id="alert-dialog-title">{"¿Está seguro que desea deshabilitar el cliente?"}</DialogTitle>
-                        <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            Al momento de deshabilitar un cliente también se deshabilitarán las cuentas asociadas al mismo.
-                        </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                        <Button onClick={handleClose} style={{backgroundColor:"#BF6D3A",color:"white",marginTop:"15px"}}>
-                            Cancelar
-                        </Button>
-                        <Button onClick={handleClosed} style={{backgroundColor:"#BF6D3A",color:"white",marginTop:"15px"}} autoFocus>
-                            Deshabilitar
-                        </Button>
-                        </DialogActions>
-                    </Dialog>
-                    </div>
+                        </div>
                     </Card>
                 </div>
             </div>
             </div>
         );
 }
-export default BuscarDeshabilitarCliente;
+export default BuscarCrearCuenta;

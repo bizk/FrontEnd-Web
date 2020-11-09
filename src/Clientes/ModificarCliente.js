@@ -1,6 +1,6 @@
 import React, {useState } from 'react';
 import Navigation from '../components/Navbar';
-import { Button, Card, ListGroup } from 'react-bootstrap';
+import {Card} from 'react-bootstrap';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import history from './../history';
@@ -19,165 +19,200 @@ function ModificarCliente (props){
           marginBottom: theme.spacing(2),
           width: 200,
         },
+        modify: {
+            padding:30,
+        },
+        title:{
+            fontStyle:"italic", 
+            textAlign:"center",
+            marginTop:"30px"
+        }
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
         return (
             <div className="Modificar">
                 <Navigation />
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 30 }}>
-                <div><h2 style={{fontStyle:"italic", textAlign:"center", marginTop:"30px"}}>Modificar cliente</h2>
+            <div className={classes.modify}>
+                <div><h2 className={classes.title}>Modificar cliente</h2>
                 <div class="container">
             <div class="row">
                 <div class="col-md-6 offset-md-2">
                 <Formik
             initialValues={{
-                Nombre: (cliente.nombre),
-                Apellido: (cliente.apellido),
-                Dni: (cliente.dni),
-                Email: (cliente.email),
-                Cuit: (cliente.cuit),
-                Domicilio: (cliente.domicilio),
-                Piso:  (cliente.piso),
-                Date: (cliente.fechanac),
-                Pregunta1:(cliente.preg1),
-                Respuesta1:(cliente.resp1),
-                Pregunta2:(cliente.preg2),
-                Respuesta2:(cliente.resp2),
-                Pregunta3:(cliente.preg3),
-                Respuesta3:(cliente.resp3),
+                nombre: (cliente.nombre),
+                apellido: (cliente.apellido),
+                dni: (cliente.dni),
+                email: (cliente.email),
+                cuit: (cliente.cuit),
+                domicilio_ciudad: (cliente.domicilio_ciudad),
+                domicilio_calle: (cliente.domicilio_calle),
+                domicilio_numero: (cliente.domicilio_numero),
+                domicilio_barrio: (cliente.domicilio_barrio),
+                piso: (cliente.piso),
+                date: (cliente.fechanac),
+                pregunta1:(cliente.preg1),
+                respuesta1:(cliente.resp1),
+                pregunta2:(cliente.preg2),
+                respuesta2:(cliente.resp2),
+                pregunta3:(cliente.preg3),
+                respuesta3:(cliente.resp3),
 
             }}
             validationSchema={Yup.object().shape({
                 
-                Nombre: Yup.string()
+                nombre: Yup.string()
                     .required('El campo es obligatorio (*)')
                     .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
-                Apellido: Yup.string()
+                apellido: Yup.string()
                     .required('El campo es obligatorio (*)')
                     .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
-                Email: Yup.string()
+                email: Yup.string()
                     .email('El email no es válido')
                     .required('El campo es obligatorio (*)'),
-                Dni: Yup.string()
+                dni: Yup.string()
                     .matches(Number,'Ingrese únicamente números')
                     .required('El campo es obligatorio (*)')
                     .min(7, 'El DNI ingresado no es correcto')
                     .max(8, 'El DNI ingresado no es correcto'),
-                Cuit: Yup.string()
+                cuit: Yup.string()
                 .matches(Number,'Ingrese únicamente números')
                 .required('El campo es obligatorio (*)')
                 .min(11, 'El CUIT ingresado no es correcto')
                 .max(11, 'El CUIT ingresado no es correcto'),
-                Domicilio: Yup.string()
+                domicilio_ciudad:Yup.string()
                 .required('El campo es obligatorio (*)'),
-                Piso: Yup.string()
+                domicilio_calle: Yup.string()
                 .required('El campo es obligatorio (*)'),
-                Date: Yup.string()
-                    .required('El campo es obligatorio (*)'),
-                Pregunta1: Yup.string()
-                    .required('El campo es obligatorio (*)'),
-                Respuesta1: Yup.string()
+                domicilio_barrio:Yup.string()
                 .required('El campo es obligatorio (*)'),
-                Pregunta2: Yup.string()
-                    .required('El campo es obligatorio (*)'),
-                Respuesta2: Yup.string()
+                domicilio_numero:Yup.string()
+                .required('El campo es obligatorio (*)')
+                .matches(Number,'Ingrese únicamente números'),
+                piso: Yup.string()
                 .required('El campo es obligatorio (*)'),
-                Pregunta3: Yup.string()
+                date: Yup.string()
                     .required('El campo es obligatorio (*)'),
-                Respuesta3: Yup.string()
+                pregunta1: Yup.string()
+                    .required('El campo es obligatorio (*)'),
+                respuesta1: Yup.string()
+                .required('El campo es obligatorio (*)'),
+                pregunta2: Yup.string()
+                    .required('El campo es obligatorio (*)'),
+                respuesta2: Yup.string()
+                .required('El campo es obligatorio (*)'),
+                pregunta3: Yup.string()
+                    .required('El campo es obligatorio (*)'),
+                respuesta3: Yup.string()
                 .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
                 alert(JSON.stringify(fields, null, 4))
             }}
             render={({ errors, status, touched }) => (
-                <Card style={{ width: '710px', padding: 30, marginBottom:"20px", marginRight:"350px"}}>
+                <Card  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
+                <div className={classes.modify}>
                 <Form>
                     <div className="form-group">
-                        <label htmlFor="Nombre">Nombre Entidad</label>
-                        <Field name="Nombre" type="text" className={'form-control' + (errors.Nombre && touched.Nombre ? ' is-invalid' : '')} />
-                        <ErrorMessage name="Nombre" component="div" className="invalid-feedback" />
+                        <label htmlFor="nombre">Nombre Entidad</label>
+                        <Field name="nombre" type="text" className={'form-control' + (errors.nombre && touched.nombre ? ' is-invalid' : '')} />
+                        <ErrorMessage name="nombre" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Apellido">Apellido</label>
-                        <Field name="Apellido" type="text" className={'form-control' + (errors.Apellido && touched.Apellido ? ' is-invalid' : '')} />
-                        <ErrorMessage name="Apellido" component="div" className="invalid-feedback" />
+                        <label htmlFor="apellido">Apellido</label>
+                        <Field name="apellido" type="text" className={'form-control' + (errors.apellido && touched.apellido ? ' is-invalid' : '')} />
+                        <ErrorMessage name="apellido" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Dni">DNI</label>
-                        <Field name="Dni" type="text" className={'form-control' + (errors.Dni&& touched.Dni ? ' is-invalid' : '')} />
-                        <ErrorMessage name="Dni" component="div" className="invalid-feedback" />
+                        <label htmlFor="dni">DNI</label>
+                        <Field name="dni" type="text" readOnly  className={'form-control' + (errors.dni&& touched.dni ? ' is-invalid' : '')} />
+                        <ErrorMessage name="dni" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Cuit">CUIT</label>
-                        <Field name="Cuit" type="text"  className={'form-control' + (errors.Cuit && touched.Cuit ? ' is-invalid' : '')} />
-                        <ErrorMessage name="Cuit" component="div" className="invalid-feedback" />
+                        <label htmlFor="cuit">CUIT</label>
+                        <Field name="cuit" type="text" readOnly   className={'form-control' + (errors.cuit && touched.cuit ? ' is-invalid' : '')} />
+                        <ErrorMessage name="cuit" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Email">Email</label>
-                        <Field name="Email" type="text" className={'form-control' + (errors.Email && touched.Email ? ' is-invalid' : '')} />
-                        <ErrorMessage name="Email" component="div" className="invalid-feedback" />
+                        <label htmlFor="email">Email</label>
+                        <Field name="email" type="text" className={'form-control' + (errors.email && touched.email ? ' is-invalid' : '')} />
+                        <ErrorMessage name="email" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Domicilio">Domicilio (calle y número)</label>
-                        <Field name="Domicilio" type="text" className={'form-control' + (errors.Domicilio && touched.Domicilio ? ' is-invalid' : '')} />
-                        <ErrorMessage name="Domicilio" component="div" className="invalid-feedback" />
+                        <label htmlFor="domicilio_ciudad">Ciudad</label>
+                        <Field name="domicilio_ciudad" type="text" className={'form-control' + (errors.domicilio_ciudad && touched.domicilio_ciudad ? ' is-invalid' : '')} />
+                        <ErrorMessage name="domicilio_ciudad" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Piso">Piso/Departamento</label>
-                        <Field name="Piso" type="text" className={'form-control' + (errors.Piso && touched.Piso? ' is-invalid' : '')} />
-                        <ErrorMessage name="Piso" component="div" className="invalid-feedback" />
+                        <label htmlFor="domicilio_calle">Domicilio (calle)</label>
+                        <Field name="domicilio_calle" type="text" className={'form-control' + (errors.domicilio_calle&& touched.domicilio_calle ? ' is-invalid' : '')} />
+                        <ErrorMessage name="domicilio_calle" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Date">Fecha de nacimiento</label>
+                        <label htmlFor="domicilio_numero">Altura</label>
+                        <Field name="domicilio_numero" type="text" className={'form-control' + (errors.domicilio_numero&& touched.domicilio_numero ? ' is-invalid' : '')} />
+                        <ErrorMessage name="domicilio_numero" component="div" className="invalid-feedback" />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="piso">Piso/Departamento</label>
+                        <Field name="piso" type="text" className={'form-control' + (errors.piso && touched.piso? ' is-invalid' : '')} />
+                        <ErrorMessage name="piso" component="div" className="invalid-feedback" />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="domicilio_barrio">Barrio</label>
+                        <Field name="domicilio_barrio" type="text" className={'form-control' + (errors.domicilio_barrio&& touched.domicilio_barrio ? ' is-invalid' : '')} />
+                        <ErrorMessage name="domicilio_barrio" component="div" className="invalid-feedback" />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="date">Fecha de nacimiento</label>
                     <form className={classes.container} noValidate>
                 <Field
-                    name="Date"
+                    name="date"
                     type="date"
-                    className={'form-control' + (errors.Date && touched.Date? ' is-invalid' : '')}
+                    className={'form-control' + (errors.date && touched.date? ' is-invalid' : '')}
                     InputLabelProps={{
                         shrink: true,
                     }}
                 />
-                <ErrorMessage name="Date" component="div" className="invalid-feedback" />
+                <ErrorMessage name="date" component="div" className="invalid-feedback" />
                 </form>
                 </div>
                 <div className="form-group">
-                        <label htmlFor="Pregunta1">Pregunta de seguridad (1)</label>
-                        <Field name="Pregunta1" type="text" className={'form-control' + (errors.Pregunta1 && touched.Pregunta1? ' is-invalid' : '')} />
-                        <ErrorMessage name="Pregunta1" component="div" className="invalid-feedback" />
+                        <label htmlFor="pregunta1">Pregunta de seguridad (1)</label>
+                        <Field name="pregunta1" type="text" className={'form-control' + (errors.pregunta1 && touched.pregunta1? ' is-invalid' : '')} />
+                        <ErrorMessage name="pregunta1" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Respuesta1">Respuesta (1)</label>
-                        <Field name="Respuesta1" type="text" className={'form-control' + (errors.Respuesta1 && touched.Respuesta1? ' is-invalid' : '')} />
-                        <ErrorMessage name="Respuesta1" component="div" className="invalid-feedback" />
+                        <label htmlFor="respuesta1">Respuesta (1)</label>
+                        <Field name="respuesta1" type="text" className={'form-control' + (errors.respuesta1 && touched.respuesta1? ' is-invalid' : '')} />
+                        <ErrorMessage name="respuesta1" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Pregunta2">Pregunta de seguridad (2)</label>
-                        <Field name="Pregunta2" type="text" className={'form-control' + (errors.Pregunta2 && touched.Pregunta2? ' is-invalid' : '')} />
-                        <ErrorMessage name="Pregunta2" component="div" className="invalid-feedback" />
+                        <label htmlFor="pregunta2">Pregunta de seguridad (2)</label>
+                        <Field name="pregunta2" type="text" className={'form-control' + (errors.pregunta2 && touched.pregunta2? ' is-invalid' : '')} />
+                        <ErrorMessage name="pregunta2" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Respuesta2">Respuesta (2)</label>
-                        <Field name="Respuesta2" type="text" className={'form-control' + (errors.Respuesta2 && touched.Respuesta2? ' is-invalid' : '')} />
-                        <ErrorMessage name="Respuesta2" component="div" className="invalid-feedback" />
+                        <label htmlFor="respuesta2">Respuesta (2)</label>
+                        <Field name="respuesta2" type="text" className={'form-control' + (errors.respuesta2 && touched.respuesta2? ' is-invalid' : '')} />
+                        <ErrorMessage name="respuesta2" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Pregunta3">Pregunta de seguridad (3)</label>
-                        <Field name="Pregunta3" type="text" className={'form-control' + (errors.Pregunta3 && touched.Pregunta3? ' is-invalid' : '')} />
-                        <ErrorMessage name="Pregunta3" component="div" className="invalid-feedback" />
+                        <label htmlFor="pregunta3">Pregunta de seguridad (3)</label>
+                        <Field name="pregunta3" type="text" className={'form-control' + (errors.pregunta3 && touched.pregunta3? ' is-invalid' : '')} />
+                        <ErrorMessage name="pregunta3" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="Respuesta3">Respuesta (3)</label>
-                        <Field name="Respuesta3" type="text" className={'form-control' + (errors.Respuesta3 && touched.Respuesta3? ' is-invalid' : '')} />
-                        <ErrorMessage name="Respuesta3" component="div" className="invalid-feedback" />
+                        <label htmlFor="respuesta3">Respuesta (3)</label>
+                        <Field name="respuesta3" type="text" className={'form-control' + (errors.respuesta3 && touched.respuesta3? ' is-invalid' : '')} />
+                        <ErrorMessage name="respuesta3" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Guardar cambios</button>
                         <button type="reset" className="btn btn-secondary" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}} onClick={() => history.push('/ModificarCliente')}>Cancelar</button>
                     </div>
                 </Form>
+                </div>
                 </Card>
             )}
         />

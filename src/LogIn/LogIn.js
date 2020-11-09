@@ -1,18 +1,14 @@
-import React  from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
+import React, {useState}  from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
-import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import Background from "./Assets/obelisco.jpg";
+import Background from "./Assets/banco.jpg";
 import Logo from "./Assets/Logo.png";
 import history from './../history';
 
@@ -42,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
   },
   paper: {
-    margin: theme.spacing(8, 4),
+    margin: theme.spacing(9, 9),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -66,16 +62,19 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
     backgroundColor:" #BF6D3A",
   },
+  inputForm: {
+    marginTop:"30px",
+ }
 }));
 
 export default function LogIn() {
   const classes = useStyles();
-
+  const [user, setUser]=useState();
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square style={{    backgroundColor:"#ffbd59",}}>
+      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square style={{backgroundColor:"#ffbd59",}}>
         <div className={classes.paper}>
         <div className="logo">
           <img src={Logo} width="200" height="200" />
@@ -83,55 +82,58 @@ export default function LogIn() {
           <Typography component="h1" variant="h4" style={{color:"white"}}>
             Hola, Bienvenid@!
           </Typography>
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="user"
-              style={{backgroundColor:"white"}}
-              label="Nombre de usuario"
-              name="user"
-              autoComplete="user"
-              autoFocus
+          <Formik
+                initialValues={{
+                    usuario: '',
+                    contraseña: '',
+                }}
+                validationSchema={Yup.object().shape({
+                    usuario: Yup.string()
+                        .required('El campo es obligatorio (*)'),
+                    contraseña: Yup.string()
+                        .required('El campo es obligatorio (*)'),
+                })}
+                onSubmit={fields => {
+                  const user={
+                    usuario:"ignals",
+                    nombre:"Ignacio",
+                    apellido:"Matrix",
+                }
+                setUser(user);
+              }}
+                render={({ errors, status, touched }) => (
+                    <Form>
+                      <div className={classes.inputForm}>
+                        <div className="form-group">
+                            <Field name="usuario" type="text" placeholder="Nombre de usuario" className={'form-control' + (errors.usuario && touched.usuario ? ' is-invalid' : '')} />
+                            <ErrorMessage name="usuario" component="div" className="invalid-feedback" />
+                        </div>
+                        <div className="form-group">
+                            <Field name="contraseña" type="password"  placeholder="Contraseña"className={'form-control' + (errors.contraseña && touched.contraseña ? ' is-invalid' : '')} />
+                            <ErrorMessage name="contraseña" component="div" className="invalid-feedback" />
+                        </div>
+                      </div>
+                        <div className="form-group">
+                            <button style={{backgroundColor:"#BF6D3A"}} type="submit" onClick={() => history.push({
+                          pathname: '/Home',
+                          state: user,
+                        })} className="btn btn-primary">INICIAR SESION</button>
+                        </div>
+                    </Form>
+                )}
             />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              style={{backgroundColor:"white"}}
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="white" />}
-              label="Recordarme"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              color="#BF6D3A"
-              className={classes.submit}
-              onClick={() => history.push('/Home')}
-            >
-              INICIAR SESIÓN
-            </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/Olvidar" variant="body2" style={{color:"black"}}>
+                <div  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-3">
+                <Link href="/Olvidar" variant="body2" style={{color:"#BF6D3A"}}>
                   Olvidaste tu contraseña?
                 </Link>
+                </div>
               </Grid>
             </Grid>
-            <Box mt={5}>
+            <Box mt={15}>
               <Copyright />
             </Box>
-          </form>
         </div>
       </Grid>
     </Grid>
