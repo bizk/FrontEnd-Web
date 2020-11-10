@@ -1,6 +1,6 @@
 import React, {useState, useEffect  } from 'react';
 import Navigation from '../components/Navbar';
-import {Card} from 'react-bootstrap';
+import {Card, Button} from 'react-bootstrap';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import history from './../history';
@@ -9,14 +9,26 @@ import { makeStyles } from '@material-ui/core/styles';
 function PagoServicios (props){
     const [cliente, setCliente]=useState(props.location.state);
     const [facturaState, setFacturaState] = useState([]);
-
+    const numRows = facturaState.length
+    const onClick= () =>{
+        for (let i = 0; i < numRows; ++i) {
+            if(facturaState[i].select == true){
+                const facturas={
+                    factura_id:(facturaState[i].factura_id),
+                    estado: (facturaState[i].estado),
+                    vencimiento: (facturaState[i].fechav),
+                    cantidad: (facturaState[i].cantidad)
+                }
+                console.log(facturas)
+            }
+        }
+    }
   useEffect(() => {
     let facturaState = [
       { id: 1, factura_id: "56666", estado: "Vencida", fechav: "09-11-2020", cantidad: "$ 5.000,00" },
       { id: 2, factura_id:"42222", estado: "Pagada", fechav: "08-10-2020", cantidad: "$ 4.800,00" },
       { id: 3,factura_id: "30000", estado: "Pagada", fechav: "06-09-2020", cantidad: "$ 4.500,00"  }
     ];
-
     setFacturaState(
       facturaState.map(d => {
         return {
@@ -71,6 +83,7 @@ function PagoServicios (props){
                         <h4>Código de pago electrónico: </h4><h5>{cliente.codigo}</h5>
                     </div>
                     </div>
+                    <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white"}}>Realizar pago</Button>
                 </Card>
                 <table className="table table-bordered">
                     <thead>
@@ -106,7 +119,6 @@ function PagoServicios (props){
                                 facturaState.map(data => {
                                     if (d.id === data.id) {
                                     data.select = checked;
-                                    console.log(data)
                                     }
                                     return data;
                                 })
