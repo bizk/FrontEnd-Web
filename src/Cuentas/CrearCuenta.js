@@ -35,11 +35,9 @@ function CrearCuenta (props){
     const [show, setShow] = useState(false);
     const handleClose = () =>{
          setShow(false);
-         history.push('/BuscarCrearCuenta')
     }
     const handleShow = () => setShow(true);
     const [cuenta,setCuenta]=useState()
-    const [nroCuenta, setNroCuenta]= useState("245368796542103654278954")
     const [cbu, setCbu]= useState("123456789123456789012")
     const [token, setToken] = useState("99939753698000")
     const Number = /^[0-9]+$/;
@@ -202,7 +200,6 @@ function CrearCuenta (props){
                 </div>
                     <div className="form-group">
                         <button type="submit" onClick={handleShow} className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Crear cuenta</button>
-                        <button type="reset" className="btn btn-secondary" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}} onClick={() => history.push('/BuscarCrearCuenta')}>Cancelar</button>
                     </div>
                 </Form>
                 </div>
@@ -225,7 +222,6 @@ function CrearCuenta (props){
                 <h7 style={{fontWeight: 'bold'}}>Apellido: </h7> {cliente.apellido} <br />
                 <h7 style={{fontWeight: 'bold'}}>DNI: </h7>{cliente.dni}<br />
                 <h7 style={{fontWeight: 'bold'}}>Tipo de Cuenta: </h7>{cuenta=="ahorro"? "Caja de ahorro" : "Cuenta corriente"}<br />
-                <h7 style={{fontWeight: 'bold'}}>Número de Cuenta: </h7>{nroCuenta}<br />
                 <h7 style={{fontWeight: 'bold'}}>CBU: </h7>{cbu}<br />
                 <h7 style={{fontWeight: 'bold'}}>Token de seguridad: </h7>{token}<br />
             </Modal.Body>

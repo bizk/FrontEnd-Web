@@ -206,7 +206,6 @@ export default function AñadirCliente (){
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Añadir cliente</button>
-                        <button type="reset" className="btn btn-secondary" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}} onClick={() => history.push('/Home')}>Cancelar</button>
                     </div>
                 </Form>
                 </div>

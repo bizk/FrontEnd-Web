@@ -209,7 +209,6 @@ function ModificarCliente (props){
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Guardar cambios</button>
-                        <button type="reset" className="btn btn-secondary" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}} onClick={() => history.push('/ModificarCliente')}>Cancelar</button>
                     </div>
                 </Form>
                 </div>

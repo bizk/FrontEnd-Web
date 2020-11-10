@@ -7,9 +7,14 @@ import * as Yup from 'yup';
 import { Router, Switch, Route,Link } from "react-router-dom";
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
-function BuscarCrearCuenta (props){
-    const [user, setUser]=useState(props.location.state);  
+function BuscarDepositoPropio (props){
     const [cliente, setCliente]=useState();
+    const [user, setUser]=useState(props.location.state);  
+    const [currentAccount, setCurrentAccount] = useState();
+    const [selectAccount, setSelectedAccount] = useState();
+    const changeAccount = (newAccount) => {
+        setSelectedAccount(newAccount)
+    }
     const useStyles=makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -38,15 +43,15 @@ function BuscarCrearCuenta (props){
             fontWeight: 'bold'
         }
       }));
-        const Number = /^[0-9]+$/;
-        const classes = useStyles();
+    const Number = /^[0-9]+$/;
+    const classes = useStyles();
         return (
             <div className="Modificar">
-                <Navigation user={user} />
+                <Navigation />
             <div className={classes.modify}>
-                <div><h2 className={classes.title}>Crear cuenta bancaria</h2>
+                <div><h2 className={classes.title}>Depósito propio</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-                    <div className={classes.modify}>
+                        <div className={classes.modify}>
                         <h7 className={classes.title1}>Buscar cliente por DNI </h7>
                         <Formik 
                         initialValues={{
@@ -66,10 +71,7 @@ function BuscarCrearCuenta (props){
                                 dni: "39753698",
                                 cuit: "21034698721",
                                 email:"ignacioals98@hotmail.com",
-                                domicilio_ciudad:"CABA",
-                                domicilio_calle:"Avenida Las Heras",
-                                domicilio_numero:"257",
-                                domicilio_barrio:"Palermo",
+                                domicilio:"Avenida Cordoba 275",
                                 piso:"13 A",
                                 fechanac:"1997-05-20",
                                 preg1: "Primer auto",
@@ -86,6 +88,9 @@ function BuscarCrearCuenta (props){
                             if(cliente.cuentas.cuentacorriente==""){
                                 cliente.cuentas.cuentacorriente=" -"
                             }
+                            if(cliente.cuentas.cajaahorro==""){
+                                cliente.cuentas.cajaahorro="-"
+                            }
                             console.log(cliente);
                             setCliente(cliente);
                         }}
@@ -93,7 +98,7 @@ function BuscarCrearCuenta (props){
                             <Form>
                                 <div class="row">
                                 <Field name="Buscador" type="text"  className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
-                                <button type="submit" className="btn btn-primary col-sm-1  col-sm-md-2 col-lg-1 ml-lg-2" style={{backgroundColor: "#BF6D3A"}}><SearchIcon /></button>
+                                <button type="submit" className="btn btn-primary col-sm-1 col-lg-1 ml-lg-2" style={{backgroundColor: "#BF6D3A"}}><SearchIcon /></button>
                                 <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />
                                 </div>
                             </Form>
@@ -102,13 +107,24 @@ function BuscarCrearCuenta (props){
                         {cliente && (
                         <div className={classes.title1}>
                             <h7 >Nombre: </h7>{cliente.nombre}<br />
-                            <h7 >Apellido: </h7> {cliente.apellido} <br />
-                            <h7>DNI: </h7>{cliente.dni}<br />
+                            <h7>Apellido: </h7> {cliente.apellido} <br />
+                            <h7 >DNI: </h7>{cliente.dni}<br />
                             <h7>CUIT: </h7>{cliente.cuit}<br />
-                            <h7>Cuenta/s: </h7><br /><h7 >Caja de ahorro: </h7>
-                            {cliente.cuentas.cajaahorro}<br /><h7 >Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
+                            <h7>Cuenta/s: </h7><br /><h7>Caja de ahorro: </h7>
+                            {cliente.cuentas.cajaahorro}<br /><h7>Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
+                            <form>
+                                <h7>Seleccione una cuenta: </h7>
+                                <select
+                                    onChange={(event) => changeAccount(event.target.value)}
+                                    value={currentAccount}
+                                >
+                                    <option value="">Seleccione una cuenta</option>
+                                    <option value="ahorro">{cliente.cuentas.cajaahorro}</option>
+                                    <option value="corriente">{cliente.cuentas.cuentacorriente}</option>
+                                </select>
+                            </form>
                                 <Link to={{
-                                    pathname: '/CrearCuenta',
+                                    pathname: '/DepositoPropio',
                                     state:cliente}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>
                          </div>
                         )}
@@ -119,4 +135,4 @@ function BuscarCrearCuenta (props){
             </div>
         );
 }
-export default BuscarCrearCuenta;
+export default BuscarDepositoPropio;

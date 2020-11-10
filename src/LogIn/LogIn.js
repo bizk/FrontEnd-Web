@@ -64,6 +64,9 @@ const useStyles = makeStyles((theme) => ({
   },
   inputForm: {
     marginTop:"30px",
+    borderRadius: 10,
+    borderColor: 'gray',
+    width: '100%'
  }
 }));
 
@@ -100,8 +103,12 @@ export default function LogIn() {
                     apellido:"Matrix",
                 }
                 setUser(user);
+                history.push({
+                  pathname: '/Home',
+                  state:user,
+                })
               }}
-                render={({ errors, status, touched }) => (
+                render={({ errors, status, touched, handleChange}) => (
                     <Form>
                       <div className={classes.inputForm}>
                         <div className="form-group">
@@ -114,10 +121,7 @@ export default function LogIn() {
                         </div>
                       </div>
                         <div className="form-group">
-                            <button style={{backgroundColor:"#BF6D3A"}} type="submit" onClick={() => history.push({
-                          pathname: '/Home',
-                          state: user,
-                        })} className="btn btn-primary">INICIAR SESION</button>
+                            <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary">INICIAR SESION</button>
                         </div>
                     </Form>
                 )}

@@ -1,16 +1,133 @@
-import React, { Component } from 'react';
+import React, {useState, useEffect  } from 'react';
 import Navigation from '../components/Navbar';
-class PagoServicios extends Component {
-    render() {
+import {Card} from 'react-bootstrap';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import history from './../history';
+import { makeStyles } from '@material-ui/core/styles';
+
+function PagoServicios (props){
+    const [cliente, setCliente]=useState(props.location.state);
+    const [facturaState, setFacturaState] = useState([]);
+
+  useEffect(() => {
+    let facturaState = [
+      { id: 1, factura_id: "56666", estado: "Vencida", fechav: "09-11-2020", cantidad: "$ 5.000,00" },
+      { id: 2, factura_id:"42222", estado: "Pagada", fechav: "08-10-2020", cantidad: "$ 4.800,00" },
+      { id: 3,factura_id: "30000", estado: "Pagada", fechav: "06-09-2020", cantidad: "$ 4.500,00"  }
+    ];
+
+    setFacturaState(
+      facturaState.map(d => {
+        return {
+          select: false,
+          id: d.id,
+          factura_id: d.factura_id,
+          estado: d.estado,
+          fechav: d.fechav,
+          cantidad: d.cantidad,
+        };
+      })
+    );
+  }, []);
+    const useStyles = makeStyles((theme) => ({
+        container: {
+          display: 'flex',
+          flexWrap: 'wrap',
+        },
+        textField: {
+          marginLeft: theme.spacing(1),
+          marginRight: theme.spacing(1),
+          marginBottom: theme.spacing(2),
+          width: 200,
+        },
+        modify: {
+            padding:30,
+        },
+        title:{
+            fontStyle:"italic", 
+            textAlign:"center",
+            marginTop:"30px"
+        },
+        title1:{
+            fontWeight: 'bold',
+            textAlign:"left",
+            marginTop:"5px"
+        }, 
+      }));
+    const Number = /^[0-9]+$/;
+    const classes = useStyles();
         return (
-            <div className="PagoServicios">
+            <div className="Modificar">
                 <Navigation />
-            <div style={{ display: 'flex', justifyContent: 'center', padding: 30 }}>
-                <div><h2>Pago de servicios/Impuestos</h2></div>
+            <div className={classes.modify}>
+                <div><h2 className={classes.title}>Pago de servicios/impuestos</h2></div>
+                <div class="container">
+                <Card className="col-sm-6 col-md-4 offset-md-4 col-lg-4 offset-lg-4 ml-6">
+                    <div className={classes.modify1}>
+                    <div className={classes.title1}>
+                        <h4>Cuenta: </h4><h5>{cliente.cuentas.cajaahorro}</h5>
+                        <h4>Su Saldo: </h4><h5>$ 2.500,00</h5>
+                        <h4>Código de pago electrónico: </h4><h5>{cliente.codigo}</h5>
+                    </div>
+                    </div>
+                </Card>
+                <table className="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">
+                        <input
+                            type="checkbox"
+                            onChange={e => {
+                            let checked = e.target.checked;
+                            setFacturaState(
+                                facturaState.map(d => {
+                                d.select = checked;
+                                return d;
+                                })
+                            );
+                            }}
+                        ></input>
+                        </th>
+                        <th scope="col">Número de factura</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha de vencimiento</th>
+                        <th scope="col">Cantidad</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {facturaState.map((d, i) => (
+                        <tr key={d.id}>
+                        <th scope="row">
+                            <input
+                            onChange={event => {
+                                let checked = event.target.checked;
+                                setFacturaState(
+                                facturaState.map(data => {
+                                    if (d.id === data.id) {
+                                    data.select = checked;
+                                    console.log(data)
+                                    }
+                                    return data;
+                                })
+                                );
+                            }}
+                            type="checkbox"
+                            checked={d.select}
+                            ></input>
+                        </th>
+                        <td>{d.factura_id}</td>
+                        <td>{d.estado}</td>
+                        <td>{d.fechav}</td>
+                        <td>{d.cantidad}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+                </div>
             </div>
             </div>
         );
     }
-}
 
 export default PagoServicios;
