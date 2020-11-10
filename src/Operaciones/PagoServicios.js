@@ -20,8 +20,11 @@ function PagoServicios (props){
                     cantidad: (facturaState[i].cantidad)
                 }
                 console.log(facturas)
+                facturaState[i].estado="Pagada"
+                console.log(facturaState[i].estado)
             }
         }
+        history.push("/PagoServicios")
     }
   useEffect(() => {
     let facturaState = [
