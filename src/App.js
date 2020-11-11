@@ -1,11 +1,13 @@
-import React from 'react';
+import React,{useState} from 'react';
 import './App.css';
-import Routes from './Routes';
-
+import Rutas from './Rutas';
+import RouteBoth from "./RouteBoth";
 function App() {
+ 
   return (
     <div className="App">
-      <Routes />
+    <RouteBoth />
+ {/* Acá tengo que buscar la forma de setear ese usuario con la info del local storage*/}
     </div>
   );
 }

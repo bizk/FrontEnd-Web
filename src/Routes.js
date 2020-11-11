@@ -3,7 +3,6 @@ import { Router, Switch, Route } from "react-router-dom";
 
 import Home from "./Home/Home";
 import history from './history';
-import LogIn from "./LogIn/LogIn";
 import AñadirCliente from "./Clientes/AñadirCliente";
 import BuscarModificarCliente from "./Clientes/BuscarModificarCliente";
 import BuscarDeshabilitarCliente from "./Clientes/BuscarDeshabilitarCliente";
@@ -26,7 +25,6 @@ export default class Routes extends Component {
         return (
             <Router history={history}>
                 <Switch>
-                    <Route path="/" exact component={LogIn}/>
                     <Route path="/Home" component={Home}/>
                     <Route path="/DeshabilitarCliente" component={BuscarDeshabilitarCliente} />
                     <Route path="/ModificarCliente" component={BuscarModificarCliente} />

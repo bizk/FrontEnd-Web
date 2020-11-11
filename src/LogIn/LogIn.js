@@ -22,7 +22,6 @@ function Copyright() {
     </Typography>
   );
 }
-
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
@@ -72,7 +71,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LogIn() {
   const classes = useStyles();
-  const [user, setUser]=useState();
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -99,10 +97,10 @@ export default function LogIn() {
                 onSubmit={fields => {
                   const user={
                     usuario:"ignals",
-                    nombre:"Ignacio",
+                    nombre:"BIgnacio",
                     apellido:"Matrix",
                 }
-                setUser(user);
+                localStorage.setItem('user', JSON.stringify(user));
                 history.push({
                   pathname: '/Home',
                   state:user,

@@ -46,6 +46,11 @@ const Navigation = (props) => {
     }
   })); 
   const classes = useStyles();
+  const onClick= () =>{
+    localStorage.clear();
+    var userrr = JSON.parse(localStorage.getItem('user'));
+    history.push("/")
+}
     return (
         <Navbar style={{backgroundColor:"#ffbd59"}}>
             <Navbar.Brand ><img src={Logo} width="60" height="55" /></Navbar.Brand>
@@ -59,7 +64,7 @@ const Navigation = (props) => {
                 </Nav>
                 <Nav className="cerrarsesion" style={{textAlign:"right"}}>
     <Nav.Link style={{color:"#825539"}} >{user.nombre} {user.apellido} <AccountCircle /></Nav.Link>
-                    <Nav.Link style={{color:"#BF6D3A"}}  onClick={() => history.push('/')}>Cerrar Sesión</Nav.Link>
+                    <Nav.Link style={{color:"#BF6D3A"}}  onClick={onClick}>Cerrar Sesión</Nav.Link>
                 </Nav>
   </Navbar.Collapse>
   <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >

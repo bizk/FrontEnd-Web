@@ -11,6 +11,7 @@ function PagoServicios (props){
     const [facturaState, setFacturaState] = useState([]);
     const numRows = facturaState.length
     const onClick= () =>{
+        let facturass=""
         for (let i = 0; i < numRows; ++i) {
             if(facturaState[i].select == true){
                 const facturas={
@@ -19,11 +20,12 @@ function PagoServicios (props){
                     vencimiento: (facturaState[i].fechav),
                     cantidad: (facturaState[i].cantidad)
                 }
-                console.log(facturas)
+                facturass=facturass+(facturaState[i].factura_id)
                 facturaState[i].estado="Pagada"
                 console.log(facturaState[i].estado)
             }
         }
+        alert(facturass)
         history.push("/PagoServicios")
     }
   useEffect(() => {
