@@ -73,6 +73,7 @@ function ResumenCuenta (props){
           ];
           
         const Number = /^[0-9]+$/;
+        const [saldo, setSaldo]=useState(2500);
         const classes = useStyles();
         return (
             <div className="ResumenCuenta">
@@ -88,7 +89,7 @@ function ResumenCuenta (props){
                 <h7>Nombre: </h7>{cliente.nombre}<br />
                 <h7>Apellido: </h7> {cliente.apellido} <br />
                 <h7>Cuenta:</h7><br /><h7>Caja de ahorro:</h7>{cliente.cuentas.cajaahorro}<br />
-                <h7>Saldo: $ </h7><h7 >2.500,00 </h7>
+                <h7>Saldo: $ </h7><h7 >{saldo} </h7>
             </div>
             </div>
             </Card>
