@@ -7,6 +7,7 @@ import { Alert } from '@material-ui/lab';
 import Modal from 'react-bootstrap/Modal';
 function PagoServicios (props){
     const [cliente, setCliente]=useState(props.location.state);
+    const[pagar,setPagar]=useState(0);
     const [show, setShow] = useState(false);
         const handleClose = () =>{
             setShow(false);
@@ -18,17 +19,13 @@ function PagoServicios (props){
     const [facturaState, setFacturaState] = useState([]);
     var miArray = new Array();
     const numRows = facturaState.length
+    const numRowss=miArray.length
     const onClick= () =>{
+        var sum=0;
         for (let i = 0; i < numRows; ++i) {
             if(facturaState[i].select == true){
-                console.log(facturaState[i].cantidad)
-                if(facturaState[i].cantidad>parseInt(saldo)){
-                    console.log(saldo)
-                    setDisplay(true)
-                }else{
-                    console.log(facturaState[i].cantidad)
-                    setSaldo(parseInt(saldo)-facturaState[i].cantidad)
-                    setDisplay(false)
+                setPagar(parseInt(pagar)+facturaState[i].cantidad)
+                sum=sum+facturaState[i].cantidad
                 const facturas={
                     factura_id:(facturaState[i].factura_id),
                     estado: (facturaState[i].estado),
@@ -36,21 +33,28 @@ function PagoServicios (props){
                     cantidad: (facturaState[i].cantidad)
                 }
                 miArray[i]=(facturaState[i])
-                console.log(miArray)
-                facturaState[i].estado="Pagada"
             }
         }
-        }
-        setShow(true)
+        console.log(miArray.length)
+        if(sum>parseInt(saldo)){
+            setDisplay(true)
+        }else{
+            setSaldo(parseInt(saldo)-sum)
+            setDisplay(false)
+            for (let i = 0; i < miArray.length; ++i) {
+                facturaState[i].estado="Pagada"
+            }
+            setShow(true)
     }
-    const [saldo, setSaldo]=useState(8500);
+}
+    const [saldo, setSaldo]=useState(9800);
     const [display, setDisplay]=useState(false);
 
   useEffect(() => {
     let facturaState = [
-      { id: 1, factura_id: "56666", estado: "Vencida", fechav: "09-11-2020", cantidad: "5000" },
-      { id: 2, factura_id:"42222", estado: "Pagada", fechav: "08-10-2020", cantidad: "4800" },
-      { id: 3,factura_id: "30000", estado: "Pagada", fechav: "06-09-2020", cantidad: "4500"  }
+      { id: 1, factura_id: "56666", estado: "Vencida", fechav: "09-11-2020", cantidad: 5000 },
+      { id: 2, factura_id:"42222", estado: "Pagada", fechav: "08-10-2020", cantidad: 4800 },
+      { id: 3,factura_id: "30000", estado: "Pagada", fechav: "06-09-2020", cantidad: 4500  }
     ];
     setFacturaState(
       facturaState.map(d => {
