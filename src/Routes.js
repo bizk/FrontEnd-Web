@@ -21,6 +21,8 @@ import ModificarCliente from "./Clientes/ModificarCliente";
 import BuscarCrearCuenta from "./Cuentas/BuscarCrearCuenta";
 import PagoServicios from "./Operaciones/PagoServicios";
 import ResumenCuenta from "./Cuentas/ResumenCuenta";
+import Olvidar from "./OlvidarContraseña/Olvidar"
+import Registrarse from "./Registrarse/Registarse";
 export default class Routes extends Component {
     render() {
         return (
@@ -45,6 +47,8 @@ export default class Routes extends Component {
                     <Route path="/DepositoTerceros" component={DepositoTerceros} />
                     <Route path="/BuscarPagoServicios" component={BuscarPagoServicios} />
                     <Route path="/PagoServicios" component={PagoServicios} />
+                    <Route path="/OlvideContraseña" component={Olvidar} />
+                    <Route path="/Registrarse" component={Registrarse} />
                 </Switch>
             </Router>
         )

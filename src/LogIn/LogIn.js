@@ -129,8 +129,13 @@ export default function LogIn() {
             <Grid container>
               <Grid item xs>
                 <div  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-3">
-                <Link href="/Olvidar" variant="body2" style={{color:"#BF6D3A"}}>
+                <Link href="/OlvideContraseña" variant="body2" style={{color:"#BF6D3A"}}>
                   Olvidaste tu contraseña?
+                </Link>
+                </div>
+                <div  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-3">
+                <Link href="/Registrarse" variant="body2" style={{color:"#BF6D3A"}}>
+                  Registrarse
                 </Link>
                 </div>
               </Grid>
