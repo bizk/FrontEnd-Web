@@ -1,9 +1,11 @@
-import React from 'react';
-import { Card} from 'react-bootstrap';
+import React,{useState} from 'react';
+import { Button, Card} from 'react-bootstrap';
+import history from './../history';
 import { makeStyles } from '@material-ui/core/styles';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
-import history from './../history';
+import Modal from 'react-bootstrap/Modal';
+import { Alert } from '@material-ui/lab';
 import * as Yup from 'yup';
 export default function AñadirCliente (){
         const useStyles = makeStyles((theme) => ({
@@ -28,6 +30,14 @@ export default function AñadirCliente (){
           }));
         const Number = /^[0-9]+$/;
         const classes = useStyles();
+        const [show, setShow] = useState(false);
+        const handleClose = () =>{
+            setShow(false);
+            history.push({
+                pathname: '/Home',
+                state:JSON.parse(localStorage.getItem('user')) })
+        }
+        const handleShow = () => setShow(true);
         return (
             <div className="AddCliente">
             <Navigation />
@@ -104,6 +114,7 @@ export default function AñadirCliente (){
                 .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
+                setShow(true)
                 alert(JSON.stringify(fields, null, 4))
             }}
             render={({ errors, status, touched }) => (
@@ -215,6 +226,20 @@ export default function AñadirCliente (){
                 </div>
             </div>
             </div>
-            </div></div>
+            </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Usuario creado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El cliente ha sido creado exitosamente</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+        </Modal>
+            </div>
         );
     }

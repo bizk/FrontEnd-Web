@@ -1,8 +1,10 @@
 import React,{useState} from 'react';
-import { Card} from 'react-bootstrap';
+import { Button, Card} from 'react-bootstrap';
 import { makeStyles } from '@material-ui/core/styles';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Alert } from '@material-ui/lab';
+import Modal from 'react-bootstrap/Modal';
 import history from '../history';
 import * as Yup from 'yup';
 export default function ExtraccionDinero (props){
@@ -37,6 +39,15 @@ export default function ExtraccionDinero (props){
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+    const [show, setShow] = useState(false);
+        const handleClose = () =>{
+            setShow(false);
+            history.push({
+                pathname: '/BuscarDepositoPropio',
+                state:JSON.parse(localStorage.getItem('user')) })
+        }
+        const handleShow = () => setShow(true);
+    const [saldo, setSaldo]=useState(2500);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -84,6 +95,8 @@ export default function ExtraccionDinero (props){
             })}
             onSubmit={fields => {
                 alert(JSON.stringify(fields, null, 4))
+                setSaldo(parseInt(saldo)+parseInt(fields.cantidad))
+                setShow(true);
             }}
             render={({ errors, status, touched }) => (
                 <Card  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
@@ -111,7 +124,7 @@ export default function ExtraccionDinero (props){
                     </div>
                     <div className="form-group">
                         <label htmlFor="cbu">CBU</label>
-                        <Field name="cbu" type="text"  className={'form-control' + (errors.cbu && touched.cbu ? ' is-invalid' : '')} />
+                        <Field name="cbu" type="text" className={'form-control' + (errors.cbu && touched.cbu ? ' is-invalid' : '')} />
                         <ErrorMessage name="cbu" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
@@ -120,7 +133,7 @@ export default function ExtraccionDinero (props){
                         <ErrorMessage name="cantidad" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Realizar deposito</button>
+                        <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Realizar depósito</button>
                     </div>
                 </Form>
                 </div>
@@ -132,6 +145,20 @@ export default function ExtraccionDinero (props){
             </div>
             </div>     
             </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Depósito propio realizado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El depósito ha sido realizado exitosamente.</Alert>
+            <Alert severity="warning">Su nuevo saldo es de $ {saldo}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
             </div>
         );
     }

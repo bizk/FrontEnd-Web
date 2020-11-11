@@ -5,6 +5,7 @@ import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import * as Yup from 'yup';
 import {Link } from "react-router-dom";
+import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 function BuscarModificarCliente (){
     const [cliente, setCliente]=useState();
@@ -38,6 +39,7 @@ function BuscarModificarCliente (){
           }));
         const Number = /^[0-9]+$/;
         const classes = useStyles();
+        const [display, setDisplay]=useState(false);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -61,7 +63,7 @@ function BuscarModificarCliente (){
                             const cliente={
                                 nombre: "Ignacio",
                                 apellido: "Matrix",
-                                dni: "39753698",
+                                dni:"39753698",
                                 cuit: "21034698721",
                                 email:"ignacioals98@hotmail.com",
                                 domicilio_ciudad:"CABA",
@@ -77,8 +79,14 @@ function BuscarModificarCliente (){
                                 preg3: "Nombre de mascota",
                                 resp3: "Lola",
                                 };
-                            console.log(cliente);
-                            setCliente(cliente);
+                            if(fields.Buscador !== cliente.dni){
+                                setDisplay(true);
+                                console.log(fields.buscar)
+                            }else{
+                                setDisplay(false);
+                                console.log(cliente);
+                                setCliente(cliente);
+                            }
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
@@ -86,6 +94,8 @@ function BuscarModificarCliente (){
                                 <Field name="Buscador" type="text"  className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
                                 <button type="submit" className="btn btn-primary col-sm-1 col-lg-1 ml-lg-2" style={{backgroundColor:"#BF6D3A",}} ><SearchIcon /></button>
                                 <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />
+                                {display && (
+                                    <Alert severity="error">No se han encontrado resultados</Alert>)}
                                 </div>
                             </Form>
                          )}

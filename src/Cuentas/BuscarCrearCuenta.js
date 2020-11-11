@@ -1,10 +1,11 @@
 import React, {useState } from 'react';
-import { Button, Card, ListGroup } from 'react-bootstrap';
+import { Button, Card} from 'react-bootstrap';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import * as Yup from 'yup';
-import { Router, Switch, Route,Link } from "react-router-dom";
+import { Alert } from '@material-ui/lab';
+import {Link } from "react-router-dom";
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
 function BuscarCrearCuenta (props){
@@ -40,6 +41,7 @@ function BuscarCrearCuenta (props){
       }));
         const Number = /^[0-9]+$/;
         const classes = useStyles();
+        const [display, setDisplay]=useState(false);
         return (
             <div className="Modificar">
                 <Navigation user={user} />
@@ -83,11 +85,19 @@ function BuscarCrearCuenta (props){
                                     cuentacorriente: "",
                                 }
                                 };
-                            if(cliente.cuentas.cuentacorriente==""){
-                                cliente.cuentas.cuentacorriente=" -"
-                            }
-                            console.log(cliente);
-                            setCliente(cliente);
+                                if(fields.Buscador !== cliente.dni){
+                                    setDisplay(true);
+                                    console.log(fields.buscar)
+                                }else{
+                                    setDisplay(false);
+                                    if(cliente.cuentas.cuentacorriente==""){
+                                        cliente.cuentas.cuentacorriente=" -"
+                                    }else if(cliente.cuentas.cajaahorro==""){
+                                        cliente.cuentas.cajaahorro=" -"
+                                    }
+                                    console.log(cliente);
+                                    setCliente(cliente);
+                                }
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
@@ -95,6 +105,8 @@ function BuscarCrearCuenta (props){
                                 <Field name="Buscador" type="text"  className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
                                 <button type="submit" className="btn btn-primary col-sm-1  col-sm-md-2 col-lg-1 ml-lg-2" style={{backgroundColor: "#BF6D3A"}}><SearchIcon /></button>
                                 <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />
+                                {display && (
+                                    <Alert severity="error">No se han encontrado resultados</Alert>)}
                                 </div>
                             </Form>
                          )}

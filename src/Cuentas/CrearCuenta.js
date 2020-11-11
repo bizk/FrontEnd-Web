@@ -3,6 +3,7 @@ import Navigation from '../components/Navbar';
 import { Button, Card} from 'react-bootstrap';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { Alert } from '@material-ui/lab';
 import history from './../history';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from 'react-bootstrap/Modal';
@@ -35,6 +36,9 @@ function CrearCuenta (props){
     const [show, setShow] = useState(false);
     const handleClose = () =>{
          setShow(false);
+         history.push({
+                pathname: '/BuscarCrearCuenta',
+                state:JSON.parse(localStorage.getItem('user')) })
     }
     const handleShow = () => setShow(true);
     const [cuenta,setCuenta]=useState()
@@ -42,6 +46,7 @@ function CrearCuenta (props){
     const [token, setToken] = useState("99939753698000")
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+    
         return (
             <div className="Modificar">
                 <Navigation />
@@ -216,7 +221,7 @@ function CrearCuenta (props){
             <Modal.Title>Cuenta creada</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                La cuenta ha sido creada exitosamente. <br />
+                <Alert severity="success">La cuenta ha sido creada exitosamente </Alert><br />
                 Los datos de la cuenta son los siguientes: <br />
                 <h7 style={{fontWeight: 'bold'}}>Nombre: </h7>{cliente.nombre}<br />
                 <h7 style={{fontWeight: 'bold'}}>Apellido: </h7> {cliente.apellido} <br />

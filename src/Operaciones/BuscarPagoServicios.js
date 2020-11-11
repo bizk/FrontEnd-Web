@@ -1,18 +1,34 @@
 import React, {useState } from 'react';
-import { Button, Card, ListGroup } from 'react-bootstrap';
+import { Button, Card} from 'react-bootstrap';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import * as Yup from 'yup';
-import { Router, Switch, Route,Link } from "react-router-dom";
+import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
-function BuscarPagoServicios (props){
+function BuscarPagoServicios(props){
     const [cliente, setCliente]=useState();
-    const [clientee, setClientee]=useState();
     const [user, setUser]=useState(props.location.state);  
+    const [clientee,setClientee]=useState("");
     const [currentAccount, setCurrentAccount] = useState();
-    const [selectAccount, setSelectedAccount] = useState();
+    const [selectAccount, setSelectedAccount] = useState("");
+    const onClick=()=>{
+        console.log(selectAccount)
+        if(clientee!==""){
+            setDisplayVerificar(false)
+        if(selectAccount!==""){
+            setDisplayAccount(false);
+            history.push({
+            pathname: '/PagoServicios',
+            state:cliente})
+            setDisplayAccount(true);
+        }else{
+            setDisplayAccount(true);
+        }}else{
+            setDisplayVerificar(true)
+        }
+    }
     const changeAccount = (newAccount) => {
         setSelectedAccount(newAccount)
     }
@@ -44,17 +60,21 @@ function BuscarPagoServicios (props){
             fontWeight: 'bold'
         },
         title2:{
-            fontWeight: 'bold',
             marginLeft:"15px"
         }
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+    const [display, setDisplay]=useState(false);
+    const[displayVerificar, setDisplayVerificar]=useState(false);
+    const[displayAccount, setDisplayAccount]=useState(false);
+    const[displayCorriente,setDisplayCorriente]=useState(true);
+    const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
         return (
             <div className="Modificar">
                 <Navigation />
             <div className={classes.modify}>
-                <div><h2 className={classes.title}>Pago de servicios</h2>
+                <div><h2 className={classes.title}>Pago de servicios/impuestos</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                         <div className={classes.modify}>
                         <h7 className={classes.title1}>Buscar cliente por DNI </h7>
@@ -90,14 +110,22 @@ function BuscarPagoServicios (props){
                                     cuentacorriente: "",
                                 }
                                 };
-                            if(cliente.cuentas.cuentacorriente==""){
-                                cliente.cuentas.cuentacorriente=" -"
-                            }
-                            if(cliente.cuentas.cajaahorro==""){
-                                cliente.cuentas.cajaahorro="-"
-                            }
-                            console.log(cliente);
-                            setCliente(cliente);
+                                if(fields.Buscador !== cliente.dni){
+                                    setDisplay(true);
+                                    console.log(fields.buscar)
+                                }else{
+                                    setDisplay(false);
+                                    if(cliente.cuentas.cuentacorriente==""){
+                                        cliente.cuentas.cuentacorriente="-"
+                                        setDisplayCorriente(false)
+                                    }
+                                    if(cliente.cuentas.cajaahorro==""){
+                                        cliente.cuentas.cajaahorro="-"
+                                        setDisplayCajaahorro(false)
+                                    }
+                                    console.log(cliente);
+                                    setCliente(cliente);
+                                }
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
@@ -105,6 +133,8 @@ function BuscarPagoServicios (props){
                                 <Field name="Buscador" type="text"  className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
                                 <button type="submit" className="btn btn-primary col-sm-1 col-lg-1 ml-lg-2" style={{backgroundColor: "#BF6D3A"}}><SearchIcon /></button>
                                 <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />
+                                {display && (
+                                    <Alert severity="error">No se han encontrado resultados</Alert>)}
                                 </div>
                             </Form>
                          )}
@@ -115,8 +145,8 @@ function BuscarPagoServicios (props){
                             <h7>Apellido: </h7> {cliente.apellido} <br />
                             <h7 >DNI: </h7>{cliente.dni}<br />
                             <h7>CUIT: </h7>{cliente.cuit}<br />
-                            <h7>Cuenta/s: </h7><br /><h7>Caja de ahorro: </h7>
-                            {cliente.cuentas.cajaahorro}<br /><h7>Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
+                            <h7>Cuenta/s: </h7><br />
+                            <h7>Caja de ahorro: </h7>{cliente.cuentas.cajaahorro}<br /><h7>Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
                             <form>
                                 <h7>Seleccione una cuenta: </h7>
                                 <select
@@ -124,11 +154,12 @@ function BuscarPagoServicios (props){
                                     value={currentAccount}
                                 >
                                     <option value="">Seleccione una cuenta</option>
-                                    <option value="ahorro">{cliente.cuentas.cajaahorro}</option>
-                                    <option value="corriente">{cliente.cuentas.cuentacorriente}</option>
+                                    {displayCajaahorro && (<option value="ahorro">{cliente.cuentas.cajaahorro}</option>)}
+                                    {displayCorriente && (<option value="corriente">{cliente.cuentas.cuentacorriente}</option>)}
                                 </select>
                             </form>
-                            
+                                {displayAccount && (
+                                        <Alert severity="warning">Debe seleccionar una cuenta</Alert>)}
                             <Formik 
                         initialValues={{
                             codigo: '',
@@ -176,15 +207,16 @@ function BuscarPagoServicios (props){
                                 <div class="row">
                                 <h7 className={classes.title2}>Código de pago electrónico</h7>
                                 <Field name="codigo" type="text"  className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.codigo && touched.codigo ? ' is-invalid' : '')} />
-                                <button type="submit" className="btn btn-primary col-sm-1 col-md-2 col-lg-2 ml-lg-2 mb-2" style={{backgroundColor: "#BF6D3A"}}>Validar</button>
+                                <button type="submit" className="btn btn-primary col-sm-6 col-md-5 col-lg-2 ml-lg-2 mb-2" style={{backgroundColor: "#BF6D3A"}}>Validar</button>
                                 <ErrorMessage name="codigo" component="div" className="invalid-feedback" />
+                                {displayVerificar && (
+                                        <Alert severity="warning">Debe validar el código de pago electrónico.</Alert>)}
                                 </div>
                             </Form>
                          )}
                         />
-                                <Link to={{
-                                    pathname: '/PagoServicios',
-                                    state:clientee}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>
+
+                                <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white", marginTop:"5px"}} >  Siguiente  </Button>
                          </div>
                         )}
                         </div>

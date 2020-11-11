@@ -1,12 +1,23 @@
 import React,{useState} from 'react';
-import { Card} from 'react-bootstrap';
+import { Button, Card} from 'react-bootstrap';
 import { makeStyles } from '@material-ui/core/styles';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import history from '../history';
+import { Alert } from '@material-ui/lab';
+import Modal from 'react-bootstrap/Modal';
 import * as Yup from 'yup';
 export default function ExtraccionDinero (props){
     const [cliente, setCliente]=useState(props.location.state);
+    const[saldo, setSaldo]=useState(2500);
+    const [show, setShow] = useState(false);
+        const handleClose = () =>{
+            setShow(false);
+            history.push({
+                pathname: '/BuscarExtraccionDinero',
+                state:JSON.parse(localStorage.getItem('user')) })
+        }
+        const handleShow = () => setShow(true);
     const useStyles = makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -37,6 +48,7 @@ export default function ExtraccionDinero (props){
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+    const [display, setDisplay]=useState(false);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -46,7 +58,7 @@ export default function ExtraccionDinero (props){
                 <Card className="col-sm-6 col-md-4 offset-md-4 col-lg-4 offset-lg-4 ml-6">
                     <div className={classes.modify1}>
                     <div className={classes.title1}>
-                        <h4>Su Saldo: </h4><h5>$ 2.500,00</h5>
+                        <h4>Su Saldo: </h4><h5>$ {saldo}</h5>
                     </div>
                     </div>
                 </Card>
@@ -84,7 +96,14 @@ export default function ExtraccionDinero (props){
                 .required('El campo es obligatorio (*)')
             })}
             onSubmit={fields => {
-                alert(JSON.stringify(fields, null, 4))
+                if(parseInt(fields.cantidad)>parseInt(saldo)){
+                    setDisplay(true)
+                }else{
+                    setDisplay(false)
+                    setSaldo(parseInt(saldo)-parseInt(fields.cantidad))
+                    alert(JSON.stringify(fields, null, 4))
+                    setShow(true);
+                }
             }}
             render={({ errors, status, touched }) => (
                 <Card  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
@@ -119,6 +138,8 @@ export default function ExtraccionDinero (props){
                         <label htmlFor="cuit">Cantidad a extraer ($)</label>
                         <Field name="cantidad" type="text"   className={'form-control' + (errors.cantidad && touched.cantidad ? ' is-invalid' : '')} />
                         <ErrorMessage name="cantidad" component="div" className="invalid-feedback" />
+                        {display && (
+                                    <Alert severity="error">No cuenta con el dinero suficiente</Alert>)}
                     </div>
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Realizar extraccion</button>
@@ -133,6 +154,20 @@ export default function ExtraccionDinero (props){
             </div>
             </div>     
             </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Extracción realizada</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">La extracción ha sido realizada exitosamente</Alert>
+                <Alert severity="warning">Su nuevo saldo es de $ {saldo}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
             </div>
         );
     }

@@ -1,9 +1,11 @@
 import React, {useState } from 'react';
-import { Button, Card, ListGroup } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import * as Yup from 'yup';
+import history from './../history';
+import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -21,6 +23,9 @@ function BuscarDeshabilitarCliente (){
       };
       const handleClosed = () => {
         setOpen(false);
+        history.push({
+            pathname: '/DeshabilitarCliente',
+            state:JSON.parse(localStorage.getItem('user')) })
         setCliente();
         
     };
@@ -52,8 +57,10 @@ function BuscarDeshabilitarCliente (){
             fontWeight: 'bold'
         }
       }));
-      const classes = useStyles();
+        const classes = useStyles();
         const Number = /^[0-9]+$/;
+        const [display, setDisplay]=useState(false);
+
         return (
             <div className="Modificar">
                 <Navigation />
@@ -90,15 +97,23 @@ function BuscarDeshabilitarCliente (){
                                 preg3: "Nombre de mascota",
                                 resp3: "Lola",
                                 };
-                            console.log(cliente);
-                            setCliente(cliente);
+                                if(fields.Buscador !== cliente.dni){
+                                    setDisplay(true);
+                                    console.log(fields.buscar)
+                                }else{
+                                    setDisplay(false);
+                                    console.log(cliente);
+                                    setCliente(cliente);
+                                }
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
                                  <div class="row">
                                 <Field name="Buscador" type="text" className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
                                 <button type="submit" className="btn btn-primary col-sm-1 col-lg-1 ml-lg-2" style={{backgroundColor: "#BF6D3A"}}><SearchIcon /></button>
-                                <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />  
+                                <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />
+                                {display && (
+                                    <Alert severity="error">No se han encontrado resultados</Alert>)}  
                                 </div>                          
                             </Form>
                          )}

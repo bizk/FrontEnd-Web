@@ -1,17 +1,29 @@
 import React, {useState } from 'react';
-import { Button, Card, ListGroup } from 'react-bootstrap';
+import { Button, Card} from 'react-bootstrap';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import * as Yup from 'yup';
-import { Router, Switch, Route,Link } from "react-router-dom";
+import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
 function BuscarDepositoPropio (props){
     const [cliente, setCliente]=useState();
     const [user, setUser]=useState(props.location.state);  
     const [currentAccount, setCurrentAccount] = useState();
-    const [selectAccount, setSelectedAccount] = useState();
+    const [selectAccount, setSelectedAccount] = useState("");
+    const onClick=()=>{
+        console.log(selectAccount)
+        if(selectAccount!==""){
+            setDisplayAccount(false);
+            history.push({
+            pathname: '/DepositoPropio',
+            state:cliente})
+            setDisplayAccount(true);
+        }else{
+            setDisplayAccount(true);
+        }
+    }
     const changeAccount = (newAccount) => {
         setSelectedAccount(newAccount)
     }
@@ -45,6 +57,10 @@ function BuscarDepositoPropio (props){
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+    const [display, setDisplay]=useState(false);
+    const[displayAccount, setDisplayAccount]=useState(false);
+    const[displayCorriente,setDisplayCorriente]=useState(true);
+    const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -85,14 +101,22 @@ function BuscarDepositoPropio (props){
                                     cuentacorriente: "",
                                 }
                                 };
-                            if(cliente.cuentas.cuentacorriente==""){
-                                cliente.cuentas.cuentacorriente=" -"
-                            }
-                            if(cliente.cuentas.cajaahorro==""){
-                                cliente.cuentas.cajaahorro="-"
-                            }
-                            console.log(cliente);
-                            setCliente(cliente);
+                                if(fields.Buscador !== cliente.dni){
+                                    setDisplay(true);
+                                    console.log(fields.buscar)
+                                }else{
+                                    setDisplay(false);
+                                    if(cliente.cuentas.cuentacorriente==""){
+                                        cliente.cuentas.cuentacorriente="-"
+                                        setDisplayCorriente(false)
+                                    }
+                                    if(cliente.cuentas.cajaahorro==""){
+                                        cliente.cuentas.cajaahorro="-"
+                                        setDisplayCajaahorro(false)
+                                    }
+                                    console.log(cliente);
+                                    setCliente(cliente);
+                                }
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
@@ -100,6 +124,8 @@ function BuscarDepositoPropio (props){
                                 <Field name="Buscador" type="text"  className={'form-control col-sm-5 col-lg-9 ml-3' + (errors.Buscador && touched.Buscador ? ' is-invalid' : '')} />
                                 <button type="submit" className="btn btn-primary col-sm-1 col-lg-1 ml-lg-2" style={{backgroundColor: "#BF6D3A"}}><SearchIcon /></button>
                                 <ErrorMessage name="Buscador" component="div" className="invalid-feedback" />
+                                {display && (
+                                    <Alert severity="error">No se han encontrado resultados</Alert>)}
                                 </div>
                             </Form>
                          )}
@@ -110,8 +136,8 @@ function BuscarDepositoPropio (props){
                             <h7>Apellido: </h7> {cliente.apellido} <br />
                             <h7 >DNI: </h7>{cliente.dni}<br />
                             <h7>CUIT: </h7>{cliente.cuit}<br />
-                            <h7>Cuenta/s: </h7><br /><h7>Caja de ahorro: </h7>
-                            {cliente.cuentas.cajaahorro}<br /><h7>Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
+                            <h7>Cuenta/s: </h7><br />
+                            <h7>Caja de ahorro: </h7>{cliente.cuentas.cajaahorro}<br /><h7>Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
                             <form>
                                 <h7>Seleccione una cuenta: </h7>
                                 <select
@@ -119,13 +145,13 @@ function BuscarDepositoPropio (props){
                                     value={currentAccount}
                                 >
                                     <option value="">Seleccione una cuenta</option>
-                                    <option value="ahorro">{cliente.cuentas.cajaahorro}</option>
-                                    <option value="corriente">{cliente.cuentas.cuentacorriente}</option>
+                                    {displayCajaahorro && (<option value="ahorro">{cliente.cuentas.cajaahorro}</option>)}
+                                    {displayCorriente && (<option value="corriente">{cliente.cuentas.cuentacorriente}</option>)}
                                 </select>
                             </form>
-                                <Link to={{
-                                    pathname: '/DepositoPropio',
-                                    state:cliente}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>
+                                {displayAccount && (
+                                        <Alert severity="warning">Debe seleccionar una cuenta</Alert>)}
+                                <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button>
                          </div>
                         )}
                         </div>

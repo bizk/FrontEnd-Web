@@ -8,7 +8,7 @@ function Rutas() {
     console.log(userr);
   return (
     <div className="App">
-    {(userr.nombre =="Ignacio")?
+    {(userr.usuario =="ignals")?
     <Routes />: <RoutesProveedor />
     }
 

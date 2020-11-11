@@ -1,9 +1,11 @@
 import React, {useState } from 'react';
 import Navigation from '../components/Navbar';
-import {Card} from 'react-bootstrap';
+import { Button, Card} from 'react-bootstrap';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import history from './../history';
+import { Alert } from '@material-ui/lab';
+import Modal from 'react-bootstrap/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 
 function ModificarCliente (props){
@@ -30,6 +32,14 @@ function ModificarCliente (props){
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+    const [show, setShow] = useState(false);
+        const handleClose = () =>{
+            setShow(false);
+            history.push({
+                pathname: '/ModificarCliente',
+                state:JSON.parse(localStorage.getItem('user')) })
+        }
+        const handleShow = () => setShow(true);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -108,6 +118,7 @@ function ModificarCliente (props){
             })}
             onSubmit={fields => {
                 alert(JSON.stringify(fields, null, 4))
+                setShow(true);
             }}
             render={({ errors, status, touched }) => (
                 <Card  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
@@ -220,6 +231,19 @@ function ModificarCliente (props){
             </div>
             </div>     
             </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Cliente modificado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El cliente ha sido modificado exitosamente</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
             </div>
         );
     }

@@ -1,8 +1,10 @@
 import React,{useState} from 'react';
-import { Card} from 'react-bootstrap';
+import { Button, Card} from 'react-bootstrap';
 import { makeStyles } from '@material-ui/core/styles';
 import Navigation from '../components/Navbar';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Alert } from '@material-ui/lab';
+import Modal from 'react-bootstrap/Modal';
 import history from '../history';
 import * as Yup from 'yup';
 export default function DepositoTerceros (props){
@@ -37,6 +39,15 @@ export default function DepositoTerceros (props){
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+    const [cantidad,setCantidad]=useState("");
+    const [show, setShow] = useState(false);
+        const handleClose = () =>{
+            setShow(false);
+            history.push({
+                pathname: '/BuscarDepositoTerceros',
+                state:JSON.parse(localStorage.getItem('user')) })
+        }
+        const handleShow = () => setShow(true);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -52,7 +63,7 @@ export default function DepositoTerceros (props){
                 email: (cliente.email),
                 cuit: (cliente.cuit),
                 nrocuenta: (cliente.cuentas.cajaahorro),
-                cbu:(cliente.dni),
+                cbu:(cliente.cbu),
                 cantidad: "",
             }}
             validationSchema={Yup.object().shape({
@@ -78,6 +89,8 @@ export default function DepositoTerceros (props){
             })}
             onSubmit={fields => {
                 alert(JSON.stringify(fields, null, 4))
+                setCantidad(fields.cantidad)
+                setShow(true);
             }}
             render={({ errors, status, touched }) => (
                 <Card  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
@@ -109,7 +122,7 @@ export default function DepositoTerceros (props){
                         <ErrorMessage name="cantidad" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
-                        <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Realizar deposito</button>
+                        <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Realizar depósito</button>
                     </div>
                 </Form>
                 </div>
@@ -121,6 +134,20 @@ export default function DepositoTerceros (props){
             </div>
             </div>     
             </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Depósito terceros realizado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El depósito ha sido realizado exitosamente.</Alert>
+            <Alert severity="warning">Se ha depositado $ {cantidad} en la cuenta: {cliente.cuentas.cajaahorro}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
             </div>
         );
     }

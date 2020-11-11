@@ -9,6 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Background from "./Assets/banco.jpg";
+import { Alert } from '@material-ui/lab';
 import Logo from "./Assets/Logo.png";
 import history from './../history';
 
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
   },
   paper: {
-    margin: theme.spacing(9, 9),
+    margin: theme.spacing(9, 15),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -71,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LogIn() {
   const classes = useStyles();
+  const [display, setDisplay]=useState(false);
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -97,14 +99,26 @@ export default function LogIn() {
                 onSubmit={fields => {
                   const user={
                     usuario:"ignals",
-                    nombre:"BIgnacio",
+                    nombre:"Ignacio",
                     apellido:"Matrix",
+                    contraseña:"123456",
                 }
-                localStorage.setItem('user', JSON.stringify(user));
+                const user1={
+                  usuario:"proveedor",
+                  nombre:"Ricardo",
+                  apellido:"Manuel",
+                  contraseña:"123456",
+              }
+                if((fields.usuario!== user.usuario && fields.contraseña!== user.contraseña) || (fields.usuario!==user1.usuario && fields.contraseña!==user1.contraseña)){
+                  setDisplay(true);
+                }else{
+                setDisplay(false);
+                localStorage.setItem('user', JSON.stringify(user));//cambiar entre user y user1
                 history.push({
                   pathname: '/Home',
-                  state:user,
+                  state:user,//cambiar entre user y user1
                 })
+              }
               }}
                 render={({ errors, status, touched, handleChange}) => (
                     <Form>
@@ -119,7 +133,9 @@ export default function LogIn() {
                         </div>
                       </div>
                         <div className="form-group">
-                            <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary">INICIAR SESION</button>
+                        {display && (
+                            <Alert severity="error">El usuario o la contraseña son incorrectos.</Alert>)}
+                            <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary mt-3">INICIAR SESION</button>
                         </div>
                     </Form>
                 )}

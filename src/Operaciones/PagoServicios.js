@@ -1,38 +1,56 @@
 import React, {useState, useEffect  } from 'react';
 import Navigation from '../components/Navbar';
 import {Card, Button} from 'react-bootstrap';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 import history from './../history';
 import { makeStyles } from '@material-ui/core/styles';
-
+import { Alert } from '@material-ui/lab';
+import Modal from 'react-bootstrap/Modal';
 function PagoServicios (props){
     const [cliente, setCliente]=useState(props.location.state);
+    const [show, setShow] = useState(false);
+        const handleClose = () =>{
+            setShow(false);
+            history.push({
+                pathname: '/BuscarPagoServicios',
+                state:JSON.parse(localStorage.getItem('user')) })
+        }
+        const handleShow = () => setShow(true);
     const [facturaState, setFacturaState] = useState([]);
+    var miArray = new Array();
     const numRows = facturaState.length
     const onClick= () =>{
-        let facturass=""
         for (let i = 0; i < numRows; ++i) {
             if(facturaState[i].select == true){
+                console.log(facturaState[i].cantidad)
+                if(facturaState[i].cantidad>parseInt(saldo)){
+                    console.log(saldo)
+                    setDisplay(true)
+                }else{
+                    console.log(facturaState[i].cantidad)
+                    setSaldo(parseInt(saldo)-facturaState[i].cantidad)
+                    setDisplay(false)
                 const facturas={
                     factura_id:(facturaState[i].factura_id),
                     estado: (facturaState[i].estado),
                     vencimiento: (facturaState[i].fechav),
                     cantidad: (facturaState[i].cantidad)
                 }
-                facturass=facturass+(facturaState[i].factura_id)
+                miArray[i]=(facturaState[i])
+                console.log(miArray)
                 facturaState[i].estado="Pagada"
-                console.log(facturaState[i].estado)
             }
         }
-        alert(facturass)
-        history.push("/PagoServicios")
+        }
+        setShow(true)
     }
+    const [saldo, setSaldo]=useState(8500);
+    const [display, setDisplay]=useState(false);
+
   useEffect(() => {
     let facturaState = [
-      { id: 1, factura_id: "56666", estado: "Vencida", fechav: "09-11-2020", cantidad: "$ 5.000,00" },
-      { id: 2, factura_id:"42222", estado: "Pagada", fechav: "08-10-2020", cantidad: "$ 4.800,00" },
-      { id: 3,factura_id: "30000", estado: "Pagada", fechav: "06-09-2020", cantidad: "$ 4.500,00"  }
+      { id: 1, factura_id: "56666", estado: "Vencida", fechav: "09-11-2020", cantidad: "5000" },
+      { id: 2, factura_id:"42222", estado: "Pagada", fechav: "08-10-2020", cantidad: "4800" },
+      { id: 3,factura_id: "30000", estado: "Pagada", fechav: "06-09-2020", cantidad: "4500"  }
     ];
     setFacturaState(
       facturaState.map(d => {
@@ -84,11 +102,13 @@ function PagoServicios (props){
                     <div className={classes.modify1}>
                     <div className={classes.title1}>
                         <h4>Cuenta: </h4><h5>{cliente.cuentas.cajaahorro}</h5>
-                        <h4>Su Saldo: </h4><h5>$ 2.500,00</h5>
+                        <h4>Su Saldo: </h4><h5>$ {saldo}</h5>
                         <h4>Código de pago electrónico: </h4><h5>{cliente.codigo}</h5>
                     </div>
                     </div>
-                    <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white"}}>Realizar pago</Button>
+                    {display && (
+                                    <Alert severity="error">No cuenta con el dinero suficiente</Alert>)}
+                    <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white", marginTop:"15px"}}>Realizar pago</Button>
                 </Card>
                 <table className="table table-bordered">
                     <thead>
@@ -136,13 +156,27 @@ function PagoServicios (props){
                         <td>{d.factura_id}</td>
                         <td>{d.estado}</td>
                         <td>{d.fechav}</td>
-                        <td>{d.cantidad}</td>
+                        <td>$ {d.cantidad}</td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
                 </div>
             </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Pago realizado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El pago ha sido realizado exitosamente</Alert>
+                <Alert severity="warning">Su nuevo saldo es de $ {saldo}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
             </div>
         );
     }
