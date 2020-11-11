@@ -21,7 +21,7 @@ function BuscarPagoServicios(props){
             setDisplayAccount(false);
             history.push({
             pathname: '/PagoServicios',
-            state:cliente})
+            state:clientee})
             setDisplayAccount(true);
         }else{
             setDisplayAccount(true);
@@ -191,7 +191,7 @@ function BuscarPagoServicios(props){
                                     cajaahorro:(cliente.cuentas.cajaahorro),
                                     cuentacorriente: (cliente.cuentas.cuentacorriente),
                                 },
-                                codigo:"25222222",
+                                codigo:"12345678901234",
                                 };
                             if(cliente.cuentas.cuentacorriente==""){
                                 cliente.cuentas.cuentacorriente=" -"
