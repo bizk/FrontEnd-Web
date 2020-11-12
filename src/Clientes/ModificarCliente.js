@@ -50,6 +50,7 @@ function ModificarCliente (props){
                 <div class="col-md-6 offset-md-2">
                 <Formik
             initialValues={{
+                tipo: "Jurídica",
                 nombre: (cliente.nombre),
                 apellido: (cliente.apellido),
                 dni: (cliente.dni),
@@ -70,7 +71,9 @@ function ModificarCliente (props){
 
             }}
             validationSchema={Yup.object().shape({
-                
+                tipo:Yup.string()
+                    .required('El campo es obligatorio (*)')
+                    .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
                 nombre: Yup.string()
                     .required('El campo es obligatorio (*)')
                     .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
@@ -124,6 +127,11 @@ function ModificarCliente (props){
                 <Card  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
                 <div className={classes.modify}>
                 <Form>
+                <div className="form-group">
+                        <label htmlFor="tipo">Tipo de cliente</label>
+                        <Field name="tipo" type="text" className={'form-control' + (errors.tipo && touched.tipo ? ' is-invalid' : '')} />
+                        <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
+                    </div>
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre Entidad</label>
                         <Field name="nombre" type="text" className={'form-control' + (errors.nombre && touched.nombre ? ' is-invalid' : '')} />

@@ -4,11 +4,11 @@ import RouteBoth from "./RouteBoth";
 import Routes from "./Routes";
 import RoutesProveedor from "./Proveedores/Routes";
 function Rutas() {
-    var userr =JSON.parse(localStorage.getItem('user'));
+    var userr =JSON.parse(localStorage.getItem('rolid'));
     console.log(userr);
   return (
     <div className="App">
-    {(userr.usuario =="ignals")?
+    {(userr=="2")?
     <Routes />: <RoutesProveedor />
     }
 

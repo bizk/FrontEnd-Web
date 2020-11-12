@@ -72,7 +72,39 @@ const useStyles = makeStyles((theme) => ({
 
 export default function LogIn() {
   const classes = useStyles();
+  const setBackResponse=useState({});
+  const [status,setStatus]=useState("");
+  const manageUsuario=(data,usuario,contraseña)=>{
+    console.log(data.user.id)
+    console.log(data.token)
+    if(data.message == "Credenciales incompatibles"){
+      setDisplay(true);
+    }else{
+    setDisplay(false);
+    localStorage.setItem('user', JSON.stringify(data.user.nombre_usuario));//Guardo el nombre de usuario
+    localStorage.setItem('rolid', JSON.stringify(data.user.rol_id));//Guardo el rol
+    localStorage.setItem('token',JSON.stringify(data.token));//Guardo el token
+    localStorage.setItem('userid',JSON.stringify(data.user.id));
+    history.push({
+      pathname: '/Home',
+    })
+  }
+  }
   const [display, setDisplay]=useState(false);
+  const handleSignIn = (usuario, contraseña) => {
+    console.log(usuario)
+    console.log(contraseña)
+    const url = 'http://localhost:8080/login?nombre_usuario='+usuario+'&clave='+contraseña+''
+    console.log(url)
+    fetch(url, {method: 'POST'},
+      {mode: 'cors'},
+      {headers: { 'Content-Type':'application/json' }},
+      )
+      .then(res => res.json())
+      .then((responseData)=> {
+        manageUsuario(responseData,usuario,contraseña);
+      });
+  };
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -103,21 +135,12 @@ export default function LogIn() {
                     apellido:"Matrix",
                     contraseña:"123456",
                 }
+                handleSignIn(fields.usuario, fields.contraseña)
                 const user1={
                   usuario:"proveedor",
                   nombre:"Ricardo",
                   apellido:"Manuel",
                   contraseña:"123456",
-              }
-                if((fields.usuario!== user.usuario && fields.contraseña!== user.contraseña) || (fields.usuario!==user1.usuario && fields.contraseña!==user1.contraseña)){
-                  setDisplay(true);
-                }else{
-                setDisplay(false);
-                localStorage.setItem('user', JSON.stringify(user));//cambiar entre user y user1
-                history.push({
-                  pathname: '/Home',
-                  state:user,//cambiar entre user y user1
-                })
               }
               }}
                 render={({ errors, status, touched, handleChange}) => (
@@ -135,16 +158,21 @@ export default function LogIn() {
                         <div className="form-group">
                         {display && (
                             <Alert severity="error">El usuario o la contraseña son incorrectos.</Alert>)}
-                            <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary mt-3">INICIAR SESION</button>
+                            <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary mt-3 offset-2">INICIAR SESION</button>
                         </div>
                     </Form>
                 )}
             />
             <Grid container>
               <Grid item xs>
-                <div  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-3">
-                <Link href="/Olvidar" variant="body2" style={{color:"#BF6D3A"}}>
-                  Olvidaste tu contraseña?
+                <div  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-3 offset-1">
+                <Link href="/OlvideContraseña" variant="body2" style={{color:"#BF6D3A"}}>
+                  ¿Olvidaste tu contraseña?
+                </Link>
+                </div>
+                <div  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-3 offset-1">
+                <Link href="/Registrarse" variant="body2" style={{color:"#BF6D3A"}}>
+                  ¿Primera vez que ingresas?
                 </Link>
                 </div>
               </Grid>

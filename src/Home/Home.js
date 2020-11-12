@@ -5,7 +5,7 @@ import Navigation from '../components/Navbar';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import { makeStyles } from '@material-ui/core/styles';
 function Home (props){  
-  const [user, setUser]=useState(props.location.state); 
+  const [user, setUser]=useState(JSON.parse(localStorage.getItem('user'))); 
   const useStyles = makeStyles((theme) => ({
     container: {
       display: 'flex',

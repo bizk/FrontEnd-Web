@@ -29,6 +29,7 @@ export default function AñadirCliente (){
             }
           }));
         const Number = /^[0-9]+$/;
+        const domicilio_apartamento=useState("")
         const classes = useStyles();
         const [show, setShow] = useState(false);
         const handleClose = () =>{
@@ -38,6 +39,25 @@ export default function AñadirCliente (){
                 state:JSON.parse(localStorage.getItem('user')) })
         }
         const handleShow = () => setShow(true);
+       const manageAddCliente=(data)=>{
+            handleShow()
+            history.push({
+              pathname: '/Home',
+            })
+          }
+        const handleAdd = (nombre,apellido,tipo,dni,email,cuit,domicilio_ciudad,domicilio_calle,domicilio_barrio,domicilio_numero,domicilio_apartamento,piso,date,pregunta1,respuesta1,pregunta2,respuesta2,pregunta3,respuesta3) => {
+            const url = 'http://localhost:8080/cliente?tipo='+tipo+'&cuit='+cuit+'&dni='+dni+'&nombre='+nombre+'&apellido='+apellido+'&email='+email+'&domicilio_barrio='+domicilio_barrio+'&domicilio_calle='+domicilio_calle+'&domicilio_ciudad='+domicilio_ciudad+'&domicilio_piso='+piso+'&domicilio_apartamento='+domicilio_apartamento+'&fechaNacimiento='+date+'&pregunta1='+pregunta1+'&pregunta1_respuesta='+respuesta1+'&pregunta2='+pregunta2+'&pregunta2_respuesta='+respuesta2+'&pregunta3='+pregunta3+'&pregunta3_respuesta='+respuesta3+'&usuario_id='+JSON.parse(localStorage.getItem('userid'))+''
+            console.log(url)
+            fetch(url, {method: 'POST'},
+              {mode: 'cors'},
+              {headers: { 'Authorization': JSON.parse(localStorage.getItem('token')),
+                  'Content-Type':'application/json' }},
+              )
+              .then(res => res.json())
+             .then((responseData)=> {
+                manageAddCliente(responseData);
+              });
+          };
         return (
             <div className="AddCliente">
             <Navigation />
@@ -49,6 +69,7 @@ export default function AñadirCliente (){
             initialValues={{
                 nombre: '',
                 apellido: '',
+                tipo:'',
                 dni: '',
                 email: '',
                 cuit: '',
@@ -76,6 +97,8 @@ export default function AñadirCliente (){
                     .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
                 email: Yup.string()
                     .email('El email no es válido')
+                    .required('El campo es obligatorio (*)'),
+                tipo: Yup.string()
                     .required('El campo es obligatorio (*)'),
                 dni: Yup.string()
                     .matches(Number,'Ingrese únicamente números')
@@ -114,6 +137,9 @@ export default function AñadirCliente (){
                 .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
+                handleAdd(fields.nombre, fields.apellido, fields.tipo, fields.dni, fields.email, fields.cuit, fields.domicilio_ciudad,
+                    fields.domicilio_calle, fields.domicilio_barrio, fields.domicilio_numero, domicilio_apartamento,fields.piso, fields.date, fields.pregunta1,
+                    fields.respuesta1, fields.pregunta2, fields.respuesta2, fields.pregunta3, fields.respuesta3)
                 setShow(true)
                 alert(JSON.stringify(fields, null, 4))
             }}
@@ -121,6 +147,11 @@ export default function AñadirCliente (){
                 <Card className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
                 <div className={classes.modify}>
                 <Form>
+                <div className="form-group">
+                        <label htmlFor="nombre">Tipo de cliente</label>
+                        <Field name="tipo" type="text" className={'form-control' + (errors.tipo && touched.tipo ? ' is-invalid' : '')} />
+                        <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
+                    </div>
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre Entidad</label>
                         <Field name="nombre" type="text" className={'form-control' + (errors.nombre && touched.nombre ? ' is-invalid' : '')} />
