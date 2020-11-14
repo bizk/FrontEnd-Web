@@ -23,7 +23,7 @@ function PagoServicios (props){
     const onClick= () =>{
         var sum=0;
         for (let i = 0; i < numRows; ++i) {
-            if(facturaState[i].select == true){
+            if(facturaState[i].select === true){
                 setPagar(parseInt(pagar)+facturaState[i].cantidad)
                 sum=sum+facturaState[i].cantidad
                 const facturas={

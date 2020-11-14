@@ -8,6 +8,8 @@ import { Alert } from '@material-ui/lab';
 import {Link } from "react-router-dom";
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
+const axios = require('axios').default;
+
 function BuscarCrearCuenta (props){
     const [user, setUser]=useState(props.location.state);  
     const [cliente, setCliente]=useState();
@@ -39,9 +41,46 @@ function BuscarCrearCuenta (props){
             fontWeight: 'bold'
         }
       }));
+
         const Number = /^[0-9]+$/;
         const classes = useStyles();
         const [display, setDisplay]=useState(false);
+
+        const manageCliente = (response) =>{
+            const clienteBuscado= {
+                nombre: response.data.cliente.nombre,
+                apellido: response.data.cliente.apellido,
+                dni: response.data.cliente.dni,
+                cuit: response.data.cliente.cuit,
+                email: response.data.cliente.email,
+                domicilio_ciudad: response.data.cliente.domicilio_ciudad,
+                domicilio_calle: response.data.cliente.domicilio_calle,
+                domicilio_numero: response.data.cliente.domicilio_numero,
+                domicilio_barrio: response.data.cliente.domicilio_barrio,
+                domicilio_piso: response.data.cliente.domicilio_piso,
+                domicilio_apartamento: response.data.cliente.domicilio_apartamento,
+                fecha_nacimiento: response.data.cliente.fecha_nacimiento,
+                pregunta1: response.data.cliente.pregunta1,
+                pregutna1_respuesta: response.data.cliente.pregutna1_respuesta,
+                pregunta2: response.data.cliente.pregunta2,
+                pregunta2_respuesta: response.data.cliente.pregunta2_respuesta,
+                pregunta3: response.data.cliente.pregunta3,
+                pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
+                };
+        };
+
+        const handleBuscarCliente = (dni) => {
+            axios.post('http://localhost:8080/clientes/dni', {
+              dni: dni
+            })
+            .then(function (response) {
+              //console.log(response)
+              manageCliente(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+          };
         return (
             <div className="Modificar">
                 <Navigation user={user} />
@@ -88,11 +127,12 @@ function BuscarCrearCuenta (props){
                                 if(fields.Buscador !== cliente.dni){
                                     setDisplay(true);
                                     console.log(fields.buscar)
+                                    handleBuscarCliente(fields.Buscador)
                                 }else{
                                     setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente==""){
+                                    if(cliente.cuentas.cuentacorriente===""){
                                         cliente.cuentas.cuentacorriente=" -"
-                                    }else if(cliente.cuentas.cajaahorro==""){
+                                    }else if(cliente.cuentas.cajaahorro===""){
                                         cliente.cuentas.cajaahorro=" -"
                                     }
                                     console.log(cliente);
@@ -111,14 +151,14 @@ function BuscarCrearCuenta (props){
                             </Form>
                          )}
                         />
-                        {cliente && (
-                        <div className={classes.title1}>
+                        {cliente && ( /*Aca deberia ir clienteBuscado cuando ande la llamada al back*/
+                        <div className={classes.title1}> 
                             <h7 >Nombre: </h7>{cliente.nombre}<br />
                             <h7 >Apellido: </h7> {cliente.apellido} <br />
                             <h7>DNI: </h7>{cliente.dni}<br />
                             <h7>CUIT: </h7>{cliente.cuit}<br />
-                            <h7>Cuenta/s: </h7><br /><h7 >Caja de ahorro: </h7>
-                            {cliente.cuentas.cajaahorro}<br /><h7 >Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
+                            {/* <h7>Cuenta/s: </h7><br /><h7 >Caja de ahorro: </h7>
+                            {cliente.cuentas.cajaahorro}<br /><h7 >Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br /> */}
                                 <Link to={{
                                     pathname: '/CrearCuenta',
                                     state:cliente}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>

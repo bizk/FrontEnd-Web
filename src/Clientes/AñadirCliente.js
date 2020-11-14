@@ -46,7 +46,7 @@ export default function AñadirCliente (){
             })
           }
         const handleAdd = (nombre,apellido,tipo,dni,email,cuit,domicilio_ciudad,domicilio_calle,domicilio_barrio,domicilio_numero,domicilio_apartamento,piso,date,pregunta1,respuesta1,pregunta2,respuesta2,pregunta3,respuesta3) => {
-            const url = 'http://localhost:8080/cliente?tipo='+tipo+'&cuit='+cuit+'&dni='+dni+'&nombre='+nombre+'&apellido='+apellido+'&email='+email+'&domicilio_barrio='+domicilio_barrio+'&domicilio_calle='+domicilio_calle+'&domicilio_ciudad='+domicilio_ciudad+'&domicilio_piso='+piso+'&domicilio_apartamento='+domicilio_apartamento+'&fechaNacimiento='+date+'&pregunta1='+pregunta1+'&pregunta1_respuesta='+respuesta1+'&pregunta2='+pregunta2+'&pregunta2_respuesta='+respuesta2+'&pregunta3='+pregunta3+'&pregunta3_respuesta='+respuesta3+'&usuario_id='+JSON.parse(localStorage.getItem('userid'))+''
+            const url = 'http://localhost:8080/clientess/dni?tipo='+tipo+'&cuit='+cuit+'&dni='+dni+'&nombre='+nombre+'&apellido='+apellido+'&email='+email+'&domicilio_barrio='+domicilio_barrio+'&domicilio_calle='+domicilio_calle+'&domicilio_ciudad='+domicilio_ciudad+'&domicilio_piso='+piso+'&domicilio_apartamento='+domicilio_apartamento+'&fechaNacimiento='+date+'&pregunta1='+pregunta1+'&pregunta1_respuesta='+respuesta1+'&pregunta2='+pregunta2+'&pregunta2_respuesta='+respuesta2+'&pregunta3='+pregunta3+'&pregunta3_respuesta='+respuesta3+'&usuario_id='+JSON.parse(localStorage.getItem('userid'))+''
             console.log(url)
             fetch(url, {method: 'POST'},
               {mode: 'cors'},

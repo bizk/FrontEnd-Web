@@ -7,6 +7,8 @@ import { Alert } from '@material-ui/lab';
 import history from './../history';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from 'react-bootstrap/Modal';
+const axios = require('axios').default;
+
 
 function CrearCuenta (props){
     const [cliente, setCliente]=useState(props.location.state);
@@ -46,6 +48,35 @@ function CrearCuenta (props){
     const [token, setToken] = useState("99939753698000")
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+
+    const manageCuenta = (data) => {
+
+    }
+
+    const handleCrearCuenta = () => {
+        axios.post('http://localhost:8080/cuenta/crear', {
+            nombre: (cliente.nombre),
+            apellido: (cliente.apellido),
+            dni: (cliente.dni),
+            email: (cliente.email),
+            cuit: (cliente.cuit),
+            domicilio_ciudad: (cliente.domicilio_ciudad),
+            domicilio_calle: (cliente.domicilio_calle),
+            domicilio_numero: (cliente.domicilio_numero),
+            domicilio_barrio: (cliente.domicilio_barrio),
+            piso:  (cliente.piso),
+            date: (cliente.fechanac),
+            tipoCuenta: cuenta,
+            fondo: "",
+        })
+        .then(function (response) {
+          console.log(response)
+          manageCuenta(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      };
     
         return (
             <div className="Modificar">
@@ -116,6 +147,7 @@ function CrearCuenta (props){
                 }
                 setCuenta(fields.tipoCuenta)
                 alert(JSON.stringify(fields, null, 4))
+                handleCrearCuenta()
             }}
             render={({ errors, status, touched }) => (
                 <Card className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">

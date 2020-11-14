@@ -7,6 +7,8 @@ import * as Yup from 'yup';
 import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
+const axios = require('axios').default;
+
 function BuscarCrearCuenta (props){
     const [cliente, setCliente]=useState();
     const [user, setUser]=useState(props.location.state);  
@@ -61,6 +63,41 @@ function BuscarCrearCuenta (props){
     const[displayAccount, setDisplayAccount]=useState(false);
     const[displayCorriente,setDisplayCorriente]=useState(true);
     const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
+    const manageCliente = (response) =>{
+        const clienteBuscado= {
+            nombre: response.data.cliente.nombre,
+            apellido: response.data.cliente.apellido,
+            dni: response.data.cliente.dni,
+            cuit: response.data.cliente.cuit,
+            email: response.data.cliente.email,
+            domicilio_ciudad: response.data.cliente.domicilio_ciudad,
+            domicilio_calle: response.data.cliente.domicilio_calle,
+            domicilio_numero: response.data.cliente.domicilio_numero,
+            domicilio_barrio: response.data.cliente.domicilio_barrio,
+            domicilio_piso: response.data.cliente.domicilio_piso,
+            domicilio_apartamento: response.data.cliente.domicilio_apartamento,
+            fecha_nacimiento: response.data.cliente.fecha_nacimiento,
+            pregunta1: response.data.cliente.pregunta1,
+            pregutna1_respuesta: response.data.cliente.pregutna1_respuesta,
+            pregunta2: response.data.cliente.pregunta2,
+            pregunta2_respuesta: response.data.cliente.pregunta2_respuesta,
+            pregunta3: response.data.cliente.pregunta3,
+            pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
+            };
+    };
+
+    const handleBuscarCliente = (dni) => {
+        axios.post('http://localhost:8080/clientes/dni', {
+          dni: dni
+        })
+        .then(function (response) {
+          //console.log(response)
+          manageCliente(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      };
         return (
             <div className="Modificar">
                 <Navigation />
@@ -104,13 +141,14 @@ function BuscarCrearCuenta (props){
                                 if(fields.Buscador !== cliente.dni){
                                     setDisplay(true);
                                     console.log(fields.buscar)
+                                    handleBuscarCliente(fields.Buscador)
                                 }else{
                                     setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente==""){
+                                    if(cliente.cuentas.cuentacorriente===""){
                                         cliente.cuentas.cuentacorriente="-"
                                         setDisplayCorriente(false)
                                     }
-                                    if(cliente.cuentas.cajaahorro==""){
+                                    if(cliente.cuentas.cajaahorro===""){
                                         cliente.cuentas.cajaahorro="-"
                                         setDisplayCajaahorro(false)
                                     }

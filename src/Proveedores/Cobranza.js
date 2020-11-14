@@ -4,39 +4,73 @@ import { ToastContainer, toast } from 'react-toastify';
 import Navigation from './components/Navbar';
 import { Button, Card} from 'react-bootstrap';
 import { Alert } from '@material-ui/lab';
+import * as Yup from 'yup';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { makeStyles } from "@material-ui/core/styles";
+
 
 const BASE_URL = 'http://localhost:3000/';
+const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "100vh",
+  },
+  paper: {
+    margin: theme.spacing(9, 15),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+    backgroundColor:" #BF6D3A",
+  },
+  inputForm: {
+    marginTop:"30px",
+    borderRadius: 10,
+    borderColor: 'gray',
+    width: '100%'
+ }
+}));
 
 class Cobranza extends Component {
+
 	constructor(props) {
 	super(props);
 	  this.state = {
 		selectedFile: null,
 		display:false,
 		display1:false,
+		numero_cuenta:'',
 	  }   
 	};
   
 	changeHandler = event=>{
     var uploadFile = event.target.files[0];    
-        this.setState({
+    this.setState({
 		    selectedFile: uploadFile
 		});
+		console.log(uploadFile)
 	}
 	fileUpload = () => {
 	const formData = new FormData();    
-	formData.append('file', this.state.selectedFile)    
-	axios.post(BASE_URL, formData)
-	  .then(res => {
-		this.setState({
-		    display1:true
-		});
-	  })
-	  .catch(err => {
-		this.setState({
-		    display:true
-		});
-	  });
+	formData.append('file', this.state.selectedFile)  
+	axios.post('http://localhost:8080/facturas/cargar', {
+			archivo: this.state.selectedFile,
+			numero_cuenta: this.state.numero_cuenta,
+		},
+		{headers: {
+			Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+		}})
+    .then(function (response) {
+      console.log(response)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 
 	};
 	
@@ -63,6 +97,32 @@ class Cobranza extends Component {
 			<div className="container">
 				<div className="row">
 					<div className="col-md-5 offset-md-3 mt-4">					
+					<Formik
+                initialValues={{
+									numero_cuenta:''
+                }}
+                validationSchema={Yup.object().shape({
+                    numero_cuenta: Yup.string()
+                        .required('El número de cuenta es obligatorio(*)'),
+                })}
+                onSubmit={fields => {
+								this.setState({ numero_cuenta : fields.numero_cuenta })
+              }}
+                render={({ errors, status, touched, handleChange}) => (
+                    <Form>
+                      <div className={useStyles.inputForm}>
+                        <div className="form-group">
+                            <Field name="numero_cuenta" type="text" placeholder="Numero de Cuenta" className={'form-control' + (errors.numero_cuenta && touched.numero_cuenta ? ' is-invalid' : '')} />
+                            <ErrorMessage name="numero_cuenta" component="div" className="invalid-feedback" />
+                        </div>
+                      </div>
+                        <div className="form-group">
+                        {this.state.display && (
+                            <Alert severity="error">El numero de cuenta es incorrecto</Alert>)}
+                        </div>
+                    </Form>
+                )}
+            />
 						<form method="post" action="#" id="#">
 							<div className="form-group files">
 								<h2>Cargue su archivo </h2>
