@@ -74,30 +74,29 @@ const useStyles = makeStyles((theme) => ({
 export default function LogIn() {
   const classes = useStyles();
   const setBackResponse=useState({});
+  const access="x-access-token";
   const [status,setStatus]=useState("");
   const manageUsuario=(data,usuario,contraseña)=>{
     setDisplay(false);
-    localStorage.setItem('user', JSON.stringify(data.data.user.nombre_usuario));//Guardo el nombre de usuario
-    localStorage.setItem('alias', JSON.stringify(data.data.user.role.alias));//Guardo el rol
-    console.log(data.token)
-    localStorage.setItem('token',JSON.stringify(data.data.token));//Guardo el token
-    localStorage.setItem('userid',JSON.stringify(data.data.user.id));
+    console.log(data)
+    localStorage.setItem('user', JSON.stringify(data.data.user.cliente.apellido));//Guardo el nombre de usuario
+    console.log(data.data.user.rol)
+    localStorage.setItem('alias', JSON.stringify(data.data.user.rol));//Guardo el rol
+    localStorage.setItem('token',JSON.stringify(data.data.user["x-access-token"]));//Guardo el token*/
+    console.log(data.data.user["x-access-token"])
+    /*localStorage.setItem('userid',JSON.stringify(data.data.user.id));*/
     history.push({
       pathname: '/Home',
     })
   }
   const [display, setDisplay]=useState(false);
   const handleSignIn = (usuario, contraseña) => {
-    const data={nombre_usuario: usuario,clave: contraseña}
-    axios.post(`http://localhost:8080/login`,data)
+    const data={"nombre_usuario": usuario,"clave": contraseña}
+    axios.post(`https://integracion-banco.herokuapp.com/login`,data)
     .then(function (response) {
       //console.log(response)
       manageUsuario(response,usuario,contraseña);
     })
-    .catch(function (error) {
-      setDisplay(true);
-      console.log(error);
-    });
   };
   return (
     <Grid container component="main" className={classes.root}>

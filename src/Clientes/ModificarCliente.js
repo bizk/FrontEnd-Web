@@ -50,7 +50,7 @@ function ModificarCliente (props){
                 <div class="col-md-6 offset-md-2">
                 <Formik
             initialValues={{
-                tipo: "Juridica",
+                tipo: (cliente.tipo),
                 nombre: (cliente.nombre),
                 apellido: (cliente.apellido),
                 dni: (cliente.dni),
@@ -71,9 +71,8 @@ function ModificarCliente (props){
 
             }}
             validationSchema={Yup.object().shape({
-                tipo:Yup.string()
-                    .required('El campo es obligatorio (*)')
-                    .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
+                tipo: Yup.string()
+                    .required('El campo es obligatorio (*)'),
                 nombre: Yup.string()
                     .required('El campo es obligatorio (*)')
                     .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
@@ -127,10 +126,17 @@ function ModificarCliente (props){
                 <div className={classes.modify}>
                 <Form>
                 <div className="form-group">
-                        <label htmlFor="tipo">Tipo de cliente</label>
-                        <Field name="tipo" type="text" className={'form-control' + (errors.tipo && touched.tipo ? ' is-invalid' : '')} />
-                        <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
-                    </div>
+                    <label htmlFor="tipo">Tipo de cliente</label>
+                    <Field as="select"
+                        name="tipo"
+                        className={'form-control' + (errors.tipo && touched.tipo? ' is-invalid' : '')}
+                    >
+                        <option value="" label="Seleccione el tipo de cliente" />
+                        <option value="PERSONA_FISICA" label="Cliente físico" />
+                        <option value="PERSONA_JURIDICA" label="Cliente jurídico" />
+                    </Field>
+                    <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
+                </div>
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre Entidad</label>
                         <Field name="nombre" type="text" className={'form-control' + (errors.nombre && touched.nombre ? ' is-invalid' : '')} />

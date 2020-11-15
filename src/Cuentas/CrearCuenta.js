@@ -225,7 +225,7 @@ function CrearCuenta (props){
                 <h7 style={{fontWeight: 'bold'}}>Nombre: </h7>{cliente.nombre}<br />
                 <h7 style={{fontWeight: 'bold'}}>Apellido: </h7> {cliente.apellido} <br />
                 <h7 style={{fontWeight: 'bold'}}>DNI: </h7>{cliente.dni}<br />
-                <h7 style={{fontWeight: 'bold'}}>Tipo de Cuenta: </h7>{cuenta=="ahorro"? "Caja de ahorro" : "Cuenta corriente"}<br />
+                <h7 style={{fontWeight: 'bold'}}>Tipo de Cuenta: </h7>{cuenta==="ahorro"? "Caja de ahorro" : "Cuenta corriente"}<br />
                 <h7 style={{fontWeight: 'bold'}}>CBU: </h7>{cbu}<br />
             </Modal.Body>
             <Modal.Footer>

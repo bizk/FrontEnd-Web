@@ -8,9 +8,8 @@ function Rutas() {
     console.log(userr);
   return (
     <div className="App">
-    {(userr==="EJECUTIVO")?
-    <Routes />: <RoutesProveedor />
-    }
+    {(userr==="BANCO_EJECUTIVO")?
+    <Routes />: <RoutesProveedor />}
 
  {/* Acá tengo que buscar la forma de setear ese usuario con la info del local storage*/}
     </div>

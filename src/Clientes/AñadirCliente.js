@@ -33,37 +33,41 @@ export default function AñadirCliente (){
 
         const classes = useStyles();
         const [show, setShow] = useState(false);
+        const[codigo,setCodigo]=useState("");
         const handleClose = () =>{
             setShow(false);
             history.push({
                 pathname: '/Home',
                 state:JSON.parse(localStorage.getItem('user')) })
         }
-        const handleShow = () => setShow(true);
+        const handleShow = (data) =>{
+            setCodigo(data.codigo_autorizacion)
+             setShow(true);
+            }
         const [display, setDisplay]=useState(true);
         const [tipo, setTipo] = useState();
         const handleAdd = (nombre,apellido,tipo,dni,email,cuit,domicilio_ciudad,domicilio_calle,domicilio_barrio,domicilio_numero,domicilio_piso,fecha_nacimiento,pregunta1,pregunta1_respuesta,pregunta2,pregunta2_respuesta,pregunta3,pregunta3_respuesta) => {
-            axios.post(`http://localhost:8080/clientes`,
+            axios.post(`https://integracion-banco.herokuapp.com/clientes`,
                 {
-                    tipo:tipo, 
-                    cuit:cuit,
-                    dni:dni,
-                    nombre:nombre,
-                    apellido:apellido,
-                    email:email,
-                    domicilio_barrio:domicilio_barrio,
-                    domicilio_calle:domicilio_calle,
-                    domicilio_ciudad:domicilio_ciudad,
-                    domicilio_numero:domicilio_numero,
-                    domicilio_piso:domicilio_piso,
-                    domicilio_apartamento:"",
-                    fecha_nacimiento: fecha_nacimiento,
-                    pregunta1: pregunta1,
-                    pregunta1_respuesta:pregunta1_respuesta,
-                    pregunta2:pregunta2,
-                    pregunta2_respuesta:pregunta2_respuesta,
-                    pregunta3:pregunta3,
-                    pregunta3_respuesta:pregunta3_respuesta,
+                    "tipo":tipo, 
+                    "cuit":cuit,
+                    "dni":dni,
+                    "nombre":nombre,
+                    "apellido":apellido,
+                    "email":email,
+                    "domicilio_barrio":domicilio_barrio,
+                    "domicilio_calle":domicilio_calle,
+                    "domicilio_ciudad":domicilio_ciudad,
+                    "domicilio_numero":domicilio_numero,
+                    "domicilio_piso":domicilio_piso,
+                    "domicilio_apartamento":"-",
+                    "fecha_nacimiento": fecha_nacimiento,
+                    "pregunta1": pregunta1,
+                    "pregunta1_respuesta":pregunta1_respuesta,
+                    "pregunta2":pregunta2,
+                    "pregunta2_respuesta":pregunta2_respuesta,
+                    "pregunta3":pregunta3,
+                    "pregunta3_respuesta":pregunta3_respuesta
                 },{
                     headers: {
                         Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
@@ -71,7 +75,7 @@ export default function AñadirCliente (){
                 },
             )
         .then(res => {
-            handleShow()
+            handleShow(res.data)
         });
     }
         return (
@@ -149,6 +153,8 @@ export default function AñadirCliente (){
                 .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
+                console.log(fields.tipo)
+                console.log(fields.date)
                     handleAdd(fields.nombre, fields.apellido, fields.tipo, fields.dni, fields.email, fields.cuit, fields.domicilio_ciudad,
                         fields.domicilio_calle, fields.domicilio_barrio, fields.domicilio_numero,fields.piso, fields.date, fields.pregunta1,
                         fields.respuesta1, fields.pregunta2, fields.respuesta2, fields.pregunta3, fields.respuesta3)
@@ -164,8 +170,8 @@ export default function AñadirCliente (){
                         className={'form-control' + (errors.tipo && touched.tipo? ' is-invalid' : '')}
                     >
                         <option value="" label="Seleccione el tipo de cliente" />
-                        <option value="FÍSICO" label="Cliente físico" />
-                        <option value="JURÍDICO" label="Cliente jurídico" />
+                        <option value="PERSONA_FISICA" label="Cliente físico" />
+                        <option value="PROVEEDOR" label="Cliente jurídico" />
                     </Field>
                     <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
                 </div>
@@ -281,7 +287,7 @@ export default function AñadirCliente (){
             </Modal.Header>
             <Modal.Body>
                 <Alert severity="success">El cliente ha sido creado exitosamente</Alert>
-                <Alert severity="warning">El código de autorización es: </Alert>
+                <Alert severity="warning">El código de autorización es: {codigo}</Alert>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
