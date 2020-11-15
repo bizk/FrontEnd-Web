@@ -12,6 +12,7 @@ import Background from "./Assets/banco.jpg";
 import { Alert } from '@material-ui/lab';
 import Logo from "./Assets/Logo.png";
 import history from './../history';
+import axios from 'axios';
 
 function Copyright() {
   return (
@@ -75,35 +76,28 @@ export default function LogIn() {
   const setBackResponse=useState({});
   const [status,setStatus]=useState("");
   const manageUsuario=(data,usuario,contraseña)=>{
-    console.log(data.user.id)
-    console.log(data.token)
-    if(data.message == "Credenciales incompatibles"){
-      setDisplay(true);
-    }else{
     setDisplay(false);
-    localStorage.setItem('user', JSON.stringify(data.user.nombre_usuario));//Guardo el nombre de usuario
-    localStorage.setItem('rolid', JSON.stringify(data.user.rol_id));//Guardo el rol
-    localStorage.setItem('token',JSON.stringify(data.token));//Guardo el token
-    localStorage.setItem('userid',JSON.stringify(data.user.id));
+    localStorage.setItem('user', JSON.stringify(data.data.user.nombre_usuario));//Guardo el nombre de usuario
+    localStorage.setItem('alias', JSON.stringify(data.data.user.role.alias));//Guardo el rol
+    console.log(data.token)
+    localStorage.setItem('token',JSON.stringify(data.data.token));//Guardo el token
+    localStorage.setItem('userid',JSON.stringify(data.data.user.id));
     history.push({
       pathname: '/Home',
     })
   }
-  }
   const [display, setDisplay]=useState(false);
   const handleSignIn = (usuario, contraseña) => {
-    console.log(usuario)
-    console.log(contraseña)
-    const url = 'http://localhost:8080/login?nombre_usuario='+usuario+'&clave='+contraseña+''
-    console.log(url)
-    fetch(url, {method: 'POST'},
-      {mode: 'cors'},
-      {headers: { 'Content-Type':'application/json' }},
-      )
-      .then(res => res.json())
-      .then((responseData)=> {
-        manageUsuario(responseData,usuario,contraseña);
-      });
+    const data={nombre_usuario: usuario,clave: contraseña}
+    axios.post(`http://localhost:8080/login`,data)
+    .then(function (response) {
+      //console.log(response)
+      manageUsuario(response,usuario,contraseña);
+    })
+    .catch(function (error) {
+      setDisplay(true);
+      console.log(error);
+    });
   };
   return (
     <Grid container component="main" className={classes.root}>

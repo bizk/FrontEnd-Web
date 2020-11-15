@@ -106,11 +106,11 @@ function BuscarCrearCuenta (props){
                                     console.log(fields.buscar)
                                 }else{
                                     setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente==""){
+                                    if(cliente.cuentas.cuentacorriente===""){
                                         cliente.cuentas.cuentacorriente="-"
                                         setDisplayCorriente(false)
                                     }
-                                    if(cliente.cuentas.cajaahorro==""){
+                                    if(cliente.cuentas.cajaahorro===""){
                                         cliente.cuentas.cajaahorro="-"
                                         setDisplayCajaahorro(false)
                                     }

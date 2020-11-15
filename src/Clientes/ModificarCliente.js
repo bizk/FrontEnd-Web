@@ -50,7 +50,7 @@ function ModificarCliente (props){
                 <div class="col-md-6 offset-md-2">
                 <Formik
             initialValues={{
-                tipo: "Jurídica",
+                tipo: "Juridica",
                 nombre: (cliente.nombre),
                 apellido: (cliente.apellido),
                 dni: (cliente.dni),
@@ -120,7 +120,6 @@ function ModificarCliente (props){
                 .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
-                alert(JSON.stringify(fields, null, 4))
                 setShow(true);
             }}
             render={({ errors, status, touched }) => (

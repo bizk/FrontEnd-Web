@@ -7,8 +7,10 @@ import * as Yup from 'yup';
 import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
+import Modal from 'react-bootstrap/Modal';
+
 function BuscarDepositoTerceros (props){
-    const [cliente, setCliente]=useState();
+    const [cliente, setCliente]=useState("");
     const [user, setUser]=useState(props.location.state);  
     const [currentAccount, setCurrentAccount] = useState();
     const [selectAccount, setSelectedAccount] = useState("");
@@ -16,16 +18,21 @@ function BuscarDepositoTerceros (props){
         console.log(selectAccount)
         if(selectAccount!==""){
             setDisplayAccount(false);
-            history.push({
-            pathname: '/DepositoTerceros',
-            state:cliente})
-            setDisplayAccount(true);
+            setDisplayAccountInfo(true);
         }else{
             setDisplayAccount(true);
+            setDisplayAccountInfo(false);
         }
     }
     const changeAccount = (newAccount) => {
         setSelectedAccount(newAccount)
+    }
+    const [show, setShow] = useState(false);
+    const handleClose = () =>{
+        setShow(false);
+        history.push({
+            pathname: '/Home',
+        })
     }
     const useStyles=makeStyles((theme) => ({
         container: {
@@ -53,14 +60,20 @@ function BuscarDepositoTerceros (props){
         },
         title1:{
             fontWeight: 'bold'
-        }
+        },
+        modify: {
+            padding:30,
+        },
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
     const [display, setDisplay]=useState(false);
+    const[cuenta, setCuenta]=useState("");
+    const[cantidad,setCantidad]=useState("");
     const[displayAccount, setDisplayAccount]=useState(false);
     const[displayCorriente,setDisplayCorriente]=useState(true);
     const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
+    const[displayAccountInfo,setDisplayAccountInfo]=useState(false);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -68,7 +81,7 @@ function BuscarDepositoTerceros (props){
                 <div><h2 className={classes.title}>Depósito terceros</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                         <div className={classes.modify}>
-                        <h7 className={classes.title1}>Buscar cliente por CBU </h7>
+                        <h7 className={classes.title1}>Buscar cliente por DNI/CBU/CUIT</h7>
                         <Formik 
                         initialValues={{
                             Buscador: '',
@@ -77,15 +90,15 @@ function BuscarDepositoTerceros (props){
                             Buscador: Yup.string()
                                 .matches(Number,'Ingrese únicamente números')
                                 .required('El campo es obligatorio (*)')
-                                .min(22, 'El CBU ingresado no es correcto')
-                                .max(22, 'El CBU ingresado no es correcto'),
+                                .min(7, 'El DNI ingresado no es correcto')
+                                .max(8, 'El DNI ingresado no es correcto'),
                         })}
                         onSubmit={fields => {
                             const cliente={
                                 nombre: "Ignacio",
                                 apellido: "Matrix",
                                 dni: "39753698",
-                                cbu: "5467895236521045789630",
+                                cbu:"546789536521045789630",
                                 cuit: "21034698721",
                                 email:"ignacioals98@hotmail.com",
                                 domicilio:"Avenida Cordoba 275",
@@ -100,23 +113,23 @@ function BuscarDepositoTerceros (props){
                                 cuentas: {
                                     cajaahorro:"5565418547654",
                                     cuentacorriente: "",
-                                }
+                                },
                                 };
-                                if(fields.Buscador !== cliente.cbu){
+                                if(fields.Buscador !== cliente.dni){
                                     setDisplay(true);
                                     console.log(fields.buscar)
                                 }else{
                                     setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente==""){
+                                    if(cliente.cuentas.cuentacorriente===""){
                                         cliente.cuentas.cuentacorriente="-"
                                         setDisplayCorriente(false)
                                     }
-                                    if(cliente.cuentas.cajaahorro==""){
+                                    if(cliente.cuentas.cajaahorro===""){
                                         cliente.cuentas.cajaahorro="-"
                                         setDisplayCajaahorro(false)
                                     }
-                                    console.log(cliente);
                                     setCliente(cliente);
+                                    setCuenta(cliente.cuentas.cajaahorro)
                                 }
                         }}
                         render={({ errors, status, touched }) => (
@@ -135,8 +148,8 @@ function BuscarDepositoTerceros (props){
                         <div className={classes.title1}>
                             <h7 >Nombre: </h7>{cliente.nombre}<br />
                             <h7>Apellido: </h7> {cliente.apellido} <br />
-                            <h7>CBU: </h7>{cliente.cbu} <br />
-                            <h7>Cuenta: </h7> {cliente.cuentas.cajaahorro}<br />
+                            <h7 >CBU: </h7>{cliente.cbu}<br />
+                            <h7>Cuenta: </h7>{cliente.cuentas.cajaahorro}<br />
                             <form>
                                 <h7>Seleccione una cuenta: </h7>
                                 <select
@@ -150,13 +163,54 @@ function BuscarDepositoTerceros (props){
                             </form>
                                 {displayAccount && (
                                         <Alert severity="warning">Debe seleccionar una cuenta</Alert>)}
-                                <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button>
+                             <Formik
+                                initialValues={{
+                                    cantidad: "",
+                                }}
+                                validationSchema={Yup.object().shape({
+                                    cantidad: Yup.string()
+                                    .required('El campo es obligatorio (*)')
+                                })}
+                                onSubmit={fields => {
+                                    if(selectAccount!==""){
+                                        setDisplayAccount(false);
+                                        setCantidad(fields.cantidad);
+                                        setShow(true);
+                                    }else{
+                                        setDisplayAccount(true);
+                                    }
+                                   }}
+                                render={({ errors, status, touched }) => (
+                                    <Form>
+                                            <label htmlFor="cantidad">Cantidad a depositar ($)</label>
+                                            <Field name="cantidad" type="text" className={'form-control col-md-3' + (errors.cantidad && touched.cantidad ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="cantidad" component="div" className="invalid-feedback" />
+                                        <div className="form-group">
+                                            <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Realizar depósito</button>
+                                        </div>
+                                        </Form>
+                                        )}
+                                        />
                          </div>
                         )}
                         </div>
                     </Card>
                 </div>
             </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Depósito terceros realizado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El depósito de dinero ha sido realizado exitosamente</Alert>
+                                <Alert severity="warning">Se ha depositado $ {cantidad} en la cuenta: {cuenta}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
             </div>
         );
 }

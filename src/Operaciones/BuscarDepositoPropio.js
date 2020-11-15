@@ -7,6 +7,8 @@ import * as Yup from 'yup';
 import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
+import Modal from 'react-bootstrap/Modal';
+
 function BuscarDepositoPropio (props){
     const [cliente, setCliente]=useState();
     const [user, setUser]=useState(props.location.state);  
@@ -16,16 +18,21 @@ function BuscarDepositoPropio (props){
         console.log(selectAccount)
         if(selectAccount!==""){
             setDisplayAccount(false);
-            history.push({
-            pathname: '/DepositoPropio',
-            state:cliente})
-            setDisplayAccount(true);
+            setDisplayAccountInfo(true);
         }else{
             setDisplayAccount(true);
+            setDisplayAccountInfo(false);
         }
     }
     const changeAccount = (newAccount) => {
         setSelectedAccount(newAccount)
+    }
+    const [show, setShow] = useState(false);
+    const handleClose = () =>{
+        setShow(false);
+        history.push({
+            pathname: '/Home',
+        })
     }
     const useStyles=makeStyles((theme) => ({
         container: {
@@ -53,14 +60,19 @@ function BuscarDepositoPropio (props){
         },
         title1:{
             fontWeight: 'bold'
-        }
+        },
+        modify: {
+            padding:30,
+        },
       }));
     const Number = /^[0-9]+$/;
     const classes = useStyles();
     const [display, setDisplay]=useState(false);
+    const[saldo, setSaldo]=useState(2500);
     const[displayAccount, setDisplayAccount]=useState(false);
     const[displayCorriente,setDisplayCorriente]=useState(true);
     const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
+    const[displayAccountInfo,setDisplayAccountInfo]=useState(false);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -68,7 +80,7 @@ function BuscarDepositoPropio (props){
                 <div><h2 className={classes.title}>Depósito propio</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                         <div className={classes.modify}>
-                        <h7 className={classes.title1}>Buscar cliente por DNI </h7>
+                        <h7 className={classes.title1}>Buscar cliente por DNI/CBU/CUIT</h7>
                         <Formik 
                         initialValues={{
                             Buscador: '',
@@ -99,18 +111,18 @@ function BuscarDepositoPropio (props){
                                 cuentas: {
                                     cajaahorro:"5565418547654",
                                     cuentacorriente: "",
-                                }
+                                },
                                 };
                                 if(fields.Buscador !== cliente.dni){
                                     setDisplay(true);
                                     console.log(fields.buscar)
                                 }else{
                                     setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente==""){
+                                    if(cliente.cuentas.cuentacorriente===""){
                                         cliente.cuentas.cuentacorriente="-"
                                         setDisplayCorriente(false)
                                     }
-                                    if(cliente.cuentas.cajaahorro==""){
+                                    if(cliente.cuentas.cajaahorro===""){
                                         cliente.cuentas.cajaahorro="-"
                                         setDisplayCajaahorro(false)
                                     }
@@ -151,13 +163,55 @@ function BuscarDepositoPropio (props){
                             </form>
                                 {displayAccount && (
                                         <Alert severity="warning">Debe seleccionar una cuenta</Alert>)}
-                                <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button>
+                             <h7>Su saldo:$ {saldo} </h7>
+                             <Formik
+                                initialValues={{
+                                    cantidad: "",
+                                }}
+                                validationSchema={Yup.object().shape({
+                                    cantidad: Yup.string()
+                                    .required('El campo es obligatorio (*)')
+                                })}
+                                onSubmit={fields => {
+                                    if(selectAccount!==""){
+                                        setDisplayAccount(false);
+                                        setSaldo(parseInt(saldo)+parseInt(fields.cantidad))
+                                        setShow(true);
+                                    }else{
+                                        setDisplayAccount(true);
+                                    }
+                                   }}
+                                render={({ errors, status, touched }) => (
+                                    <Form>
+                                            <label htmlFor="cantidad">Cantidad a depositar ($)</label>
+                                            <Field name="cantidad" type="text" className={'form-control col-md-3' + (errors.cantidad && touched.cantidad ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="cantidad" component="div" className="invalid-feedback" />
+                                        <div className="form-group">
+                                            <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Realizar depósito</button>
+                                        </div>
+                                        </Form>
+                                        )}
+                                        />
                          </div>
                         )}
                         </div>
                     </Card>
                 </div>
             </div>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Depósito propio realizado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El depósito de dinero ha sido realizado exitosamente</Alert>
+                <Alert severity="warning">Su nuevo saldo es de $ {saldo}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
             </div>
         );
 }

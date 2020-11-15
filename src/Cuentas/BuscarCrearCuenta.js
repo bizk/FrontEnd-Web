@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 import { Alert } from '@material-ui/lab';
 import {Link } from "react-router-dom";
 import SearchIcon from '@material-ui/icons/Search';
-import history from '../history';
 function BuscarCrearCuenta (props){
     const [user, setUser]=useState(props.location.state);  
     const [cliente, setCliente]=useState();
@@ -90,9 +89,9 @@ function BuscarCrearCuenta (props){
                                     console.log(fields.buscar)
                                 }else{
                                     setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente==""){
+                                    if(cliente.cuentas.cuentacorriente===""){
                                         cliente.cuentas.cuentacorriente=" -"
-                                    }else if(cliente.cuentas.cajaahorro==""){
+                                    }else if(cliente.cuentas.cajaahorro===""){
                                         cliente.cuentas.cajaahorro=" -"
                                     }
                                     console.log(cliente);

@@ -23,7 +23,7 @@ function PagoServicios (props){
     const onClick= () =>{
         var sum=0;
         for (let i = 0; i < numRows; ++i) {
-            if(facturaState[i].select == true){
+            if(facturaState[i].select === true){
                 setPagar(parseInt(pagar)+facturaState[i].cantidad)
                 sum=sum+facturaState[i].cantidad
                 const facturas={
@@ -49,12 +49,13 @@ function PagoServicios (props){
 }
     const [saldo, setSaldo]=useState(9800);
     const [display, setDisplay]=useState(false);
+    const [displayFac, setDisplayFac]=useState(false);
 
   useEffect(() => {
     let facturaState = [
-      { id: 1, factura_id: "56666", estado: "Vencida", fechav: "09-11-2020", cantidad: 5000 },
-      { id: 2, factura_id:"42222", estado: "Pagada", fechav: "08-10-2020", cantidad: 4800 },
-      { id: 3,factura_id: "30000", estado: "Pagada", fechav: "06-09-2020", cantidad: 4500  }
+        { id: 1, factura_id:"42222", estado: "Vigente", fechav: "01-01-2021", cantidad: 4800 },
+      { id: 2, factura_id: "56666", estado: "Vigente", fechav: "25-11-2020", cantidad: 5000 },
+      { id: 3,factura_id: "30000", estado: "Vigente", fechav: "20-11-2020", cantidad: 4500  }
     ];
     setFacturaState(
       facturaState.map(d => {
@@ -112,6 +113,9 @@ function PagoServicios (props){
                     </div>
                     {display && (
                                     <Alert severity="error">No cuenta con el dinero suficiente</Alert>)}
+                    {displayFac && (
+                        <Alert severity="error">Una de las facturas seleccionadas ya se encuentra pagada</Alert>
+                    )}
                     <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white", marginTop:"15px"}}>Realizar pago</Button>
                 </Card>
                 <table className="table table-bordered">

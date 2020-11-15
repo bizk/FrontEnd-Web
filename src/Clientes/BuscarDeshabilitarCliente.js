@@ -68,7 +68,7 @@ function BuscarDeshabilitarCliente (){
                 <div><h2 className={classes.title}>Deshabilitar cliente</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                     <div className={classes.modify}>
-                        <h7 className={classes.title1}>Buscar cliente por DNI </h7>
+                        <h7 className={classes.title1}>Buscar cliente por DNI/CBU/CUIT </h7>
                         <Formik 
                         initialValues={{
                             Buscador: '',
@@ -82,12 +82,15 @@ function BuscarDeshabilitarCliente (){
                         })}
                         onSubmit={fields => {
                             const cliente={
-                                nombre: "Ignacio",
-                                apellido: "Matrix",
-                                dni: "39753698",
+                                nombre: "Eduardo",
+                                apellido: "Perez",
+                                dni:"38753698",
                                 cuit: "21034698721",
-                                email:"ignacioals98@hotmail.com",
-                                domicilio:"Avenida Cordoba 275",
+                                email:"edu@hotmail.com",
+                                domicilio_ciudad:"CABA",
+                                domicilio_calle:"Avenida Las Heras",
+                                domicilio_numero:"257",
+                                domicilio_barrio:"Palermo",
                                 piso:"13 A",
                                 fechanac:"1997-05-20",
                                 preg1: "Primer auto",

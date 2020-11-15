@@ -3,10 +3,11 @@ import { Button, Card} from 'react-bootstrap';
 import history from './../history';
 import { makeStyles } from '@material-ui/core/styles';
 import Navigation from '../components/Navbar';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Formik, Field, Form, ErrorMessage, yupToFormErrors } from 'formik';
 import Modal from 'react-bootstrap/Modal';
 import { Alert } from '@material-ui/lab';
 import * as Yup from 'yup';
+import axios from 'axios';
 export default function AñadirCliente (){
         const useStyles = makeStyles((theme) => ({
             container: {
@@ -29,7 +30,7 @@ export default function AñadirCliente (){
             }
           }));
         const Number = /^[0-9]+$/;
-        const domicilio_apartamento=useState("")
+
         const classes = useStyles();
         const [show, setShow] = useState(false);
         const handleClose = () =>{
@@ -39,25 +40,40 @@ export default function AñadirCliente (){
                 state:JSON.parse(localStorage.getItem('user')) })
         }
         const handleShow = () => setShow(true);
-       const manageAddCliente=(data)=>{
+        const [display, setDisplay]=useState(true);
+        const [tipo, setTipo] = useState();
+        const handleAdd = (nombre,apellido,tipo,dni,email,cuit,domicilio_ciudad,domicilio_calle,domicilio_barrio,domicilio_numero,domicilio_piso,fecha_nacimiento,pregunta1,pregunta1_respuesta,pregunta2,pregunta2_respuesta,pregunta3,pregunta3_respuesta) => {
+            axios.post(`http://localhost:8080/clientes`,
+                {
+                    tipo:tipo, 
+                    cuit:cuit,
+                    dni:dni,
+                    nombre:nombre,
+                    apellido:apellido,
+                    email:email,
+                    domicilio_barrio:domicilio_barrio,
+                    domicilio_calle:domicilio_calle,
+                    domicilio_ciudad:domicilio_ciudad,
+                    domicilio_numero:domicilio_numero,
+                    domicilio_piso:domicilio_piso,
+                    domicilio_apartamento:"",
+                    fecha_nacimiento: fecha_nacimiento,
+                    pregunta1: pregunta1,
+                    pregunta1_respuesta:pregunta1_respuesta,
+                    pregunta2:pregunta2,
+                    pregunta2_respuesta:pregunta2_respuesta,
+                    pregunta3:pregunta3,
+                    pregunta3_respuesta:pregunta3_respuesta,
+                },{
+                    headers: {
+                        Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+                  }
+                },
+            )
+        .then(res => {
             handleShow()
-            history.push({
-              pathname: '/Home',
-            })
-          }
-        const handleAdd = (nombre,apellido,tipo,dni,email,cuit,domicilio_ciudad,domicilio_calle,domicilio_barrio,domicilio_numero,domicilio_apartamento,piso,date,pregunta1,respuesta1,pregunta2,respuesta2,pregunta3,respuesta3) => {
-            const url = 'http://localhost:8080/cliente?tipo='+tipo+'&cuit='+cuit+'&dni='+dni+'&nombre='+nombre+'&apellido='+apellido+'&email='+email+'&domicilio_barrio='+domicilio_barrio+'&domicilio_calle='+domicilio_calle+'&domicilio_ciudad='+domicilio_ciudad+'&domicilio_piso='+piso+'&domicilio_apartamento='+domicilio_apartamento+'&fechaNacimiento='+date+'&pregunta1='+pregunta1+'&pregunta1_respuesta='+respuesta1+'&pregunta2='+pregunta2+'&pregunta2_respuesta='+respuesta2+'&pregunta3='+pregunta3+'&pregunta3_respuesta='+respuesta3+'&usuario_id='+JSON.parse(localStorage.getItem('userid'))+''
-            console.log(url)
-            fetch(url, {method: 'POST'},
-              {mode: 'cors'},
-              {headers: { 'Authorization': JSON.parse(localStorage.getItem('token')),
-                  'Content-Type':'application/json' }},
-              )
-              .then(res => res.json())
-             .then((responseData)=> {
-                manageAddCliente(responseData);
-              });
-          };
+        });
+    }
         return (
             <div className="AddCliente">
             <Navigation />
@@ -69,7 +85,7 @@ export default function AñadirCliente (){
             initialValues={{
                 nombre: '',
                 apellido: '',
-                tipo:'',
+                tipo:" ",
                 dni: '',
                 email: '',
                 cuit: '',
@@ -85,20 +101,18 @@ export default function AñadirCliente (){
                 respuesta2:'',
                 pregunta3:'',
                 respuesta3:'',
-
+                
             }}
             validationSchema={Yup.object().shape({
-                
+                tipo: Yup.string()
+                    .required('El campo es obligatorio (*)'),
                 nombre: Yup.string()
                     .required('El campo es obligatorio (*)')
                     .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
                 apellido: Yup.string()
-                    .required('El campo es obligatorio (*)')
                     .matches(/^[A-Za-z ]*$/,'Ingrese únicamente letras'),
                 email: Yup.string()
                     .email('El email no es válido')
-                    .required('El campo es obligatorio (*)'),
-                tipo: Yup.string()
                     .required('El campo es obligatorio (*)'),
                 dni: Yup.string()
                     .matches(Number,'Ingrese únicamente números')
@@ -121,8 +135,6 @@ export default function AñadirCliente (){
                 .matches(Number,'Ingrese únicamente números'),
                 piso: Yup.string()
                 .required('El campo es obligatorio (*)'),
-                date: Yup.string()
-                    .required('El campo es obligatorio (*)'),
                 pregunta1: Yup.string()
                     .required('El campo es obligatorio (*)'),
                 respuesta1: Yup.string()
@@ -137,33 +149,38 @@ export default function AñadirCliente (){
                 .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
-                handleAdd(fields.nombre, fields.apellido, fields.tipo, fields.dni, fields.email, fields.cuit, fields.domicilio_ciudad,
-                    fields.domicilio_calle, fields.domicilio_barrio, fields.domicilio_numero, domicilio_apartamento,fields.piso, fields.date, fields.pregunta1,
-                    fields.respuesta1, fields.pregunta2, fields.respuesta2, fields.pregunta3, fields.respuesta3)
-                setShow(true)
-                alert(JSON.stringify(fields, null, 4))
+                    handleAdd(fields.nombre, fields.apellido, fields.tipo, fields.dni, fields.email, fields.cuit, fields.domicilio_ciudad,
+                        fields.domicilio_calle, fields.domicilio_barrio, fields.domicilio_numero,fields.piso, fields.date, fields.pregunta1,
+                        fields.respuesta1, fields.pregunta2, fields.respuesta2, fields.pregunta3, fields.respuesta3)
             }}
             render={({ errors, status, touched }) => (
                 <Card className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
                 <div className={classes.modify}>
                 <Form>
                 <div className="form-group">
-                        <label htmlFor="nombre">Tipo de cliente</label>
-                        <Field name="tipo" type="text" className={'form-control' + (errors.tipo && touched.tipo ? ' is-invalid' : '')} />
-                        <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
-                    </div>
+                    <label htmlFor="tipo">Tipo de cliente</label>
+                    <Field as="select"
+                        name="tipo"
+                        className={'form-control' + (errors.tipo && touched.tipo? ' is-invalid' : '')}
+                    >
+                        <option value="" label="Seleccione el tipo de cliente" />
+                        <option value="FÍSICO" label="Cliente físico" />
+                        <option value="JURÍDICO" label="Cliente jurídico" />
+                    </Field>
+                    <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
+                </div>
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre Entidad</label>
                         <Field name="nombre" type="text" className={'form-control' + (errors.nombre && touched.nombre ? ' is-invalid' : '')} />
                         <ErrorMessage name="nombre" component="div" className="invalid-feedback" />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="apellido">Apellido</label>
+                    {display && (<div className="form-group">
+                        <label htmlFor="apellido">Apellido cliente/Apellido del representante legal</label>
                         <Field name="apellido" type="text" className={'form-control' + (errors.apellido && touched.apellido ? ' is-invalid' : '')} />
                         <ErrorMessage name="apellido" component="div" className="invalid-feedback" />
-                    </div>
+                    </div>)}
                     <div className="form-group">
-                        <label htmlFor="dni">DNI</label>
+                        <label htmlFor="dni">DNI cliente/DNI del representante legal</label>
                         <Field name="dni" type="text" className={'form-control' + (errors.dni&& touched.dni ? ' is-invalid' : '')} />
                         <ErrorMessage name="dni" component="div" className="invalid-feedback" />
                     </div>
@@ -202,8 +219,8 @@ export default function AñadirCliente (){
                         <Field name="domicilio_barrio" type="text" className={'form-control' + (errors.domicilio_barrio&& touched.domicilio_barrio ? ' is-invalid' : '')} />
                         <ErrorMessage name="domicilio_barrio" component="div" className="invalid-feedback" />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="date">Fecha de nacimiento</label>
+                    {display &&(<div className="form-group">
+                        <label htmlFor="date">Fecha de nacimiento cliente/ Fecha de nacimiento del representante legal</label>
                     <form className={classes.container} noValidate>
                 <Field
                     name="date"
@@ -215,7 +232,7 @@ export default function AñadirCliente (){
                 />
                 <ErrorMessage name="date" component="div" className="invalid-feedback" />
                 </form>
-                </div>
+                </div>)}
                 <div className="form-group">
                         <label htmlFor="pregunta1">Pregunta de seguridad (1)</label>
                         <Field name="pregunta1" type="text" className={'form-control' + (errors.pregunta1 && touched.pregunta1? ' is-invalid' : '')} />
@@ -260,10 +277,11 @@ export default function AñadirCliente (){
             </div>
             <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
             <Modal.Header closeButton>
-            <Modal.Title>Usuario creado</Modal.Title>
+            <Modal.Title>Cliente creado</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Alert severity="success">El cliente ha sido creado exitosamente</Alert>
+                <Alert severity="warning">El código de autorización es: </Alert>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>

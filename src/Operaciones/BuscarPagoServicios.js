@@ -77,7 +77,7 @@ function BuscarPagoServicios(props){
                 <div><h2 className={classes.title}>Pago de servicios/impuestos</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                         <div className={classes.modify}>
-                        <h7 className={classes.title1}>Buscar cliente por DNI </h7>
+                        <h7 className={classes.title1}>Buscar cliente por DNI/CBU/CUIT </h7>
                         <Formik 
                         initialValues={{
                             Buscador: '',
@@ -115,11 +115,11 @@ function BuscarPagoServicios(props){
                                     console.log(fields.buscar)
                                 }else{
                                     setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente==""){
+                                    if(cliente.cuentas.cuentacorriente===""){
                                         cliente.cuentas.cuentacorriente="-"
                                         setDisplayCorriente(false)
                                     }
-                                    if(cliente.cuentas.cajaahorro==""){
+                                    if(cliente.cuentas.cajaahorro===""){
                                         cliente.cuentas.cajaahorro="-"
                                         setDisplayCajaahorro(false)
                                     }
@@ -193,10 +193,10 @@ function BuscarPagoServicios(props){
                                 },
                                 codigo:"12345678901234",
                                 };
-                            if(cliente.cuentas.cuentacorriente==""){
+                            if(cliente.cuentas.cuentacorriente===""){
                                 cliente.cuentas.cuentacorriente=" -"
                             }
-                            if(cliente.cuentas.cajaahorro==""){
+                            if(cliente.cuentas.cajaahorro===""){
                                 cliente.cuentas.cajaahorro="-"
                             }
                             console.log(clientee);

@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Logo from "./../../LogIn/Assets/Logo.png";
 const Navigation = (props) => {
-  const[user, setUser]=useState(props.location.state);
+  const[user, setUser]=useState(JSON.parse(localStorage.getItem('user')));
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -57,10 +57,12 @@ const Navigation = (props) => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    <Nav.Link></Nav.Link>
+                    <Nav.Link style={{color:"#BF6D3A"}} onClick={() => history.push({
+                  pathname: '/Home',
+                  state:user })}>Home</Nav.Link>
                 </Nav>
                 <Nav className="cerrarsesion" style={{textAlign:"right"}}>
-    <Nav.Link style={{color:"#825539"}} >{user.nombre} {user.apellido} <AccountCircle /></Nav.Link>
+    <Nav.Link style={{color:"#825539"}} >{user}<AccountCircle /></Nav.Link>
                     <Nav.Link style={{color:"#BF6D3A"}}  onClick={onClick}>Cerrar Sesión</Nav.Link>
                 </Nav>
   </Navbar.Collapse>

@@ -115,7 +115,6 @@ function CrearCuenta (props){
                     fields.fondo=""
                 }
                 setCuenta(fields.tipoCuenta)
-                alert(JSON.stringify(fields, null, 4))
             }}
             render={({ errors, status, touched }) => (
                 <Card className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
@@ -228,7 +227,6 @@ function CrearCuenta (props){
                 <h7 style={{fontWeight: 'bold'}}>DNI: </h7>{cliente.dni}<br />
                 <h7 style={{fontWeight: 'bold'}}>Tipo de Cuenta: </h7>{cuenta=="ahorro"? "Caja de ahorro" : "Cuenta corriente"}<br />
                 <h7 style={{fontWeight: 'bold'}}>CBU: </h7>{cbu}<br />
-                <h7 style={{fontWeight: 'bold'}}>Token de seguridad: </h7>{token}<br />
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>

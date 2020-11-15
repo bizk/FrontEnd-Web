@@ -9,12 +9,9 @@ import BuscarDeshabilitarCliente from "./Clientes/BuscarDeshabilitarCliente";
 import CrearCuenta from "./Cuentas/CrearCuenta";
 import BuscarResumenCuenta from "./Cuentas/BuscarResumenCuenta";
 import BuscarExtraccionDinero from "./Operaciones/BuscarExtraccionDinero";
-import ExtraccionDinero from "./Operaciones/ExtraccionDinero";
 import BuscarDeposito from "./Operaciones/BuscarDeposito";
 import BuscarDepositoPropio from "./Operaciones/BuscarDepositoPropio";
 import BuscarDepositoTerceros from "./Operaciones/BuscarDepositoTerceros";
-import DepositoPropio from "./Operaciones/DepositoPropio";
-import DepositoTerceros from "./Operaciones/DepositoTerceros";
 import BuscarPagoServicios from "./Operaciones/BuscarPagoServicios";
 import ModificarCliente from "./Clientes/ModificarCliente";
 import BuscarCrearCuenta from "./Cuentas/BuscarCrearCuenta";
@@ -35,12 +32,9 @@ export default class Routes extends Component {
                     <Route path="/BuscarResumenCuenta" component={BuscarResumenCuenta} />
                     <Route path="/ResumenCuenta" component={ResumenCuenta} />
                     <Route path="/BuscarExtraccionDinero" component={BuscarExtraccionDinero} />
-                    <Route path="/ExtraccionDinero" component={ExtraccionDinero} />
                     <Route path="/BuscarDepositoDinero" component={BuscarDeposito} />
                     <Route path="/BuscarDepositoPropio" component={BuscarDepositoPropio} />
                     <Route path="/BuscarDepositoTerceros" component={BuscarDepositoTerceros} />
-                    <Route path="/DepositoPropio" component={DepositoPropio} />
-                    <Route path="/DepositoTerceros" component={DepositoTerceros} />
                     <Route path="/BuscarPagoServicios" component={BuscarPagoServicios} />
                     <Route path="/PagoServicios" component={PagoServicios} />
                 </Switch>
