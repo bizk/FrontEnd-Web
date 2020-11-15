@@ -160,6 +160,9 @@ function BuscarModificarCliente (){
                                 console.log("CUIT")
                             }else if((fields.Buscador).length===22){
                                 console.log("CBU")
+                            }else{
+                            setDisplay(true);
+                            setCliente(false);
                             }
                         }}
                         render={({ errors, status, touched }) => (
