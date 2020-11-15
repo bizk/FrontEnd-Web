@@ -7,6 +7,7 @@ import history from './../history';
 import { Alert } from '@material-ui/lab';
 import Modal from 'react-bootstrap/Modal';
 import { makeStyles } from '@material-ui/core/styles';
+import axios from 'axios';
 
 function ModificarCliente (props){
     const [cliente, setCliente]=useState(props.location.state);
@@ -40,6 +41,44 @@ function ModificarCliente (props){
                 state:JSON.parse(localStorage.getItem('user')) })
         }
         const handleShow = () => setShow(true);
+        const [display,setDisplay]=useState(false);
+        const handleModify = (nombre,apellido,tipo,dni,email,cuit,domicilio_ciudad,domicilio_calle,domicilio_barrio,domicilio_numero,domicilio_piso,fecha_nacimiento,pregunta1,pregunta1_respuesta,pregunta2,pregunta2_respuesta,pregunta3,pregunta3_respuesta) => {
+            axios.put('https://integracion-banco.herokuapp.com/clientes', {
+                "id":(cliente.id),
+                "tipo":tipo, 
+                "cuit":cuit,
+                "dni":dni,
+                "nombre":nombre,
+                "apellido":apellido,
+                "email":email,
+                "domicilio_barrio":domicilio_barrio,
+                "domicilio_calle":domicilio_calle,
+                "domicilio_ciudad":domicilio_ciudad,
+                "domicilio_numero":domicilio_numero,
+                "domicilio_piso":domicilio_piso,
+                "domicilio_apartamento":"-",
+                "fecha_nacimiento": fecha_nacimiento,
+                "pregunta1": pregunta1,
+                "pregunta1_respuesta":pregunta1_respuesta,
+                "pregunta2":pregunta2,
+                "pregunta2_respuesta":pregunta2_respuesta,
+                "pregunta3":pregunta3,
+                "pregunta3_respuesta":pregunta3_respuesta
+            },{
+                headers: {
+                    Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+              }
+            })
+            .then(function (response) {
+              //console.log(response)
+              setDisplay(false);
+              setShow(true);
+            })
+            .catch(function (error) {
+              console.log(error);
+              setDisplay(true);
+            });
+          };
         return (
             <div className="Modificar">
                 <Navigation />
@@ -60,14 +99,14 @@ function ModificarCliente (props){
                 domicilio_calle: (cliente.domicilio_calle),
                 domicilio_numero: (cliente.domicilio_numero),
                 domicilio_barrio: (cliente.domicilio_barrio),
-                piso: (cliente.piso),
-                date: (cliente.fechanac),
-                pregunta1:(cliente.preg1),
-                respuesta1:(cliente.resp1),
-                pregunta2:(cliente.preg2),
-                respuesta2:(cliente.resp2),
-                pregunta3:(cliente.preg3),
-                respuesta3:(cliente.resp3),
+                piso: (cliente.domicilio_piso),
+                date: (cliente.fecha_nacimiento),
+                pregunta1:(cliente.pregunta1),
+                respuesta1:(cliente.pregunta1_respuesta),
+                pregunta2:(cliente.pregunta2),
+                respuesta2:(cliente.pregunta2_respuesta),
+                pregunta3:(cliente.pregunta3),
+                respuesta3:(cliente.pregunta3_respuesta),
 
             }}
             validationSchema={Yup.object().shape({
@@ -119,7 +158,10 @@ function ModificarCliente (props){
                 .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
-                setShow(true);
+                handleModify(fields.nombre, fields.apellido, fields.tipo, fields.dni, fields.email, fields.cuit, fields.domicilio_ciudad,
+                fields.domicilio_calle, fields.domicilio_barrio, fields.domicilio_numero,fields.piso, fields.date, fields.pregunta1,
+                fields.respuesta1, fields.pregunta2, fields.respuesta2, fields.pregunta3, fields.respuesta3)
+                /*setShow(true);*/
             }}
             render={({ errors, status, touched }) => (
                 <Card  className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
@@ -231,6 +273,7 @@ function ModificarCliente (props){
                         <Field name="respuesta3" type="text" className={'form-control' + (errors.respuesta3 && touched.respuesta3? ' is-invalid' : '')} />
                         <ErrorMessage name="respuesta3" component="div" className="invalid-feedback" />
                     </div>
+                    {display && ( <Alert severity="error">Ha ocurrido un error al modificar un cliente.</Alert>)}
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Guardar cambios</button>
                     </div>

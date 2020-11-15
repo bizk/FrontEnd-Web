@@ -33,7 +33,6 @@ export default function AñadirCliente (){
 
         const classes = useStyles();
         const [show, setShow] = useState(false);
-        const[codigo,setCodigo]=useState("");
         const handleClose = () =>{
             setShow(false);
             history.push({
@@ -41,10 +40,10 @@ export default function AñadirCliente (){
                 state:JSON.parse(localStorage.getItem('user')) })
         }
         const handleShow = (data) =>{
-            setCodigo(data.codigo_autorizacion)
+            console.log(data)
              setShow(true);
             }
-        const [display, setDisplay]=useState(true);
+        const [display, setDisplay]=useState(false);
         const [tipo, setTipo] = useState();
         const handleAdd = (nombre,apellido,tipo,dni,email,cuit,domicilio_ciudad,domicilio_calle,domicilio_barrio,domicilio_numero,domicilio_piso,fecha_nacimiento,pregunta1,pregunta1_respuesta,pregunta2,pregunta2_respuesta,pregunta3,pregunta3_respuesta) => {
             axios.post(`https://integracion-banco.herokuapp.com/clientes`,
@@ -76,7 +75,10 @@ export default function AñadirCliente (){
             )
         .then(res => {
             handleShow(res.data)
-        });
+        })
+        .catch(function (error) {
+            setDisplay(true);
+          });
     }
         return (
             <div className="AddCliente">
@@ -180,11 +182,11 @@ export default function AñadirCliente (){
                         <Field name="nombre" type="text" className={'form-control' + (errors.nombre && touched.nombre ? ' is-invalid' : '')} />
                         <ErrorMessage name="nombre" component="div" className="invalid-feedback" />
                     </div>
-                    {display && (<div className="form-group">
+                    <div className="form-group">
                         <label htmlFor="apellido">Apellido cliente/Apellido del representante legal</label>
                         <Field name="apellido" type="text" className={'form-control' + (errors.apellido && touched.apellido ? ' is-invalid' : '')} />
                         <ErrorMessage name="apellido" component="div" className="invalid-feedback" />
-                    </div>)}
+                    </div>
                     <div className="form-group">
                         <label htmlFor="dni">DNI cliente/DNI del representante legal</label>
                         <Field name="dni" type="text" className={'form-control' + (errors.dni&& touched.dni ? ' is-invalid' : '')} />
@@ -225,7 +227,7 @@ export default function AñadirCliente (){
                         <Field name="domicilio_barrio" type="text" className={'form-control' + (errors.domicilio_barrio&& touched.domicilio_barrio ? ' is-invalid' : '')} />
                         <ErrorMessage name="domicilio_barrio" component="div" className="invalid-feedback" />
                     </div>
-                    {display &&(<div className="form-group">
+                    <div className="form-group">
                         <label htmlFor="date">Fecha de nacimiento cliente/ Fecha de nacimiento del representante legal</label>
                     <form className={classes.container} noValidate>
                 <Field
@@ -238,7 +240,7 @@ export default function AñadirCliente (){
                 />
                 <ErrorMessage name="date" component="div" className="invalid-feedback" />
                 </form>
-                </div>)}
+                </div>
                 <div className="form-group">
                         <label htmlFor="pregunta1">Pregunta de seguridad (1)</label>
                         <Field name="pregunta1" type="text" className={'form-control' + (errors.pregunta1 && touched.pregunta1? ' is-invalid' : '')} />
@@ -269,6 +271,7 @@ export default function AñadirCliente (){
                         <Field name="respuesta3" type="text" className={'form-control' + (errors.respuesta3 && touched.respuesta3? ' is-invalid' : '')} />
                         <ErrorMessage name="respuesta3" component="div" className="invalid-feedback" />
                     </div>
+                    {display && ( <Alert severity="error">Ya existe un cliente con el DNI o CUIT ingresado.</Alert>)}
                     <div className="form-group">
                         <button type="submit" className="btn btn-primary mr-2" style={{backgroundColor: "#BF6D3A", marginTop:"15px"}}>Añadir cliente</button>
                     </div>
@@ -287,7 +290,6 @@ export default function AñadirCliente (){
             </Modal.Header>
             <Modal.Body>
                 <Alert severity="success">El cliente ha sido creado exitosamente</Alert>
-                <Alert severity="warning">El código de autorización es: {codigo}</Alert>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
