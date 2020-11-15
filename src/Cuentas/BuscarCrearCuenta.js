@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { Alert } from '@material-ui/lab';
 import {Link } from "react-router-dom";
 import SearchIcon from '@material-ui/icons/Search';
+import axios from 'axios';
 function BuscarCrearCuenta (props){
     const [user, setUser]=useState(props.location.state);  
     const [cliente, setCliente]=useState();
@@ -41,6 +42,50 @@ function BuscarCrearCuenta (props){
         const Number = /^[0-9]+$/;
         const classes = useStyles();
         const [display, setDisplay]=useState(false);
+        const [clienteBuscado,setClienteBuscado]=useState({})
+        const manageCliente = (response) =>{
+            console.log(response)
+            setClienteBuscado({
+                nombre: response.data.nombre,
+                apellido: response.data.apellido,
+                dni: response.data.dni,
+                cuit: response.data.cuit,
+                email: response.data.email,
+                domicilio_ciudad: response.data.domicilio_ciudad,
+                domicilio_calle: response.data.domicilio_calle,
+                domicilio_numero: response.data.domicilio_numero,
+                domicilio_barrio: response.data.domicilio_barrio,
+                domicilio_piso: response.data.domicilio_piso,
+                domicilio_apartamento: response.data.domicilio_apartamento,
+                fecha_nacimiento: response.data.fecha_nacimiento,
+                pregunta1: response.data.pregunta1,
+                pregutna1_respuesta: response.data.pregutna1_respuesta,
+                pregunta2: response.data.pregunta2,
+                pregunta2_respuesta: response.data.pregunta2_respuesta,
+                pregunta3: response.data.pregunta3,
+                pregunta3_respuesta: response.data.pregunta3_respuesta,
+                cuenta_caja_ahorro:'',
+                cuenta_cuenta_corriente:'',
+                });
+        };
+
+        const handleBuscarCliente = (dni) => {
+            axios.post('https://integracion-banco.herokuapp.com/clientes/dni', {
+              "dni": dni
+            },{
+                headers: {
+                    Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+              }
+            })
+            .then(function (response) {
+              //console.log(response)
+              manageCliente(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+              setDisplay(true);
+            });
+          };
         return (
             <div className="Modificar">
                 <Navigation user={user} />
@@ -61,42 +106,7 @@ function BuscarCrearCuenta (props){
                                 .max(8, 'El DNI ingresado no es correcto'),
                         })}
                         onSubmit={fields => {
-                            const cliente={
-                                nombre: "Ignacio",
-                                apellido: "Matrix",
-                                dni: "39753698",
-                                cuit: "21034698721",
-                                email:"ignacioals98@hotmail.com",
-                                domicilio_ciudad:"CABA",
-                                domicilio_calle:"Avenida Las Heras",
-                                domicilio_numero:"257",
-                                domicilio_barrio:"Palermo",
-                                piso:"13 A",
-                                fechanac:"1997-05-20",
-                                preg1: "Primer auto",
-                                resp1: "mercedes benz a250",
-                                preg2: "Equipo favorito de fútbol",
-                                resp2: "River Plate",
-                                preg3: "Nombre de mascota",
-                                resp3: "Lola",
-                                cuentas: {
-                                    cajaahorro:"5565418547654",
-                                    cuentacorriente: "",
-                                }
-                                };
-                                if(fields.Buscador !== cliente.dni){
-                                    setDisplay(true);
-                                    console.log(fields.buscar)
-                                }else{
-                                    setDisplay(false);
-                                    if(cliente.cuentas.cuentacorriente===""){
-                                        cliente.cuentas.cuentacorriente=" -"
-                                    }else if(cliente.cuentas.cajaahorro===""){
-                                        cliente.cuentas.cajaahorro=" -"
-                                    }
-                                    console.log(cliente);
-                                    setCliente(cliente);
-                                }
+                            handleBuscarCliente(fields.Buscador)
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
@@ -110,17 +120,17 @@ function BuscarCrearCuenta (props){
                             </Form>
                          )}
                         />
-                        {cliente && (
+                        {clienteBuscado && (
                         <div className={classes.title1}>
-                            <h7 >Nombre: </h7>{cliente.nombre}<br />
-                            <h7 >Apellido: </h7> {cliente.apellido} <br />
-                            <h7>DNI: </h7>{cliente.dni}<br />
-                            <h7>CUIT: </h7>{cliente.cuit}<br />
+                            <h7 >Nombre: </h7>{clienteBuscado.nombre}<br />
+                            <h7 >Apellido: </h7> {clienteBuscado.apellido} <br />
+                            <h7>DNI: </h7>{clienteBuscado.dni}<br />
+                            <h7>CUIT: </h7>{clienteBuscado.cuit}<br />
                             <h7>Cuenta/s: </h7><br /><h7 >Caja de ahorro: </h7>
-                            {cliente.cuentas.cajaahorro}<br /><h7 >Cuenta corriente: </h7>{cliente.cuentas.cuentacorriente}<br />
+                            {clienteBuscado.cuenta_caja_ahorro}<br /><h7 >Cuenta corriente: </h7>{clienteBuscado.cuenta_cuenta_corriente}<br />
                                 <Link to={{
                                     pathname: '/CrearCuenta',
-                                    state:cliente}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>
+                                    state:clienteBuscado}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>
                          </div>
                         )}
                         </div>
