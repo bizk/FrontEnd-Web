@@ -1,6 +1,7 @@
 import React, {useState}  from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Link from "@material-ui/core/Link";
+import { Button} from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Paper from "@material-ui/core/Paper";
@@ -9,8 +10,10 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Background from "./Register.jpg";
+import { Alert } from '@material-ui/lab';
 import Logo from "../LogIn/Assets/Logo.png";
 import history from './../history';
+import axios from 'axios';
 
 function Copyright() {
   return (
@@ -73,16 +76,40 @@ const useStyles = makeStyles((theme) => ({
 export default function Registrarse() {
   const classes = useStyles();
   const [user, setUser]=useState();
-  const [codigoAutorizacion, setCodigoAutorizacion]=useState();
-  const [dni, setDni]=useState();
-  const [contraseña, setContraseña]=useState();
-  const [contraseñaConfirmar, setNuevaContraseñaConfirmar]=useState();
-  const Number = /^[0-9]+$/;
+  const [display,setDisplay]=useState(false);
+  const [show, setShow] = useState(false);
+  const handleClose = () =>{
+            setShow(false);
+            history.push({
+                pathname: '/',
+                state:JSON.parse(localStorage.getItem('user')) })
+        }
+    const handleShow = () => setShow(true);
   const Cancel=()=>{
       history.push({
           pathname: '/',
         })
   }
+  const handleRegister = (codigo_autorizacion,dni, nombre_usuario, clave) => {
+    axios.post('https://integracion-banco.herokuapp.com/clientes/usuario/registrar', {
+        "dni":dni,
+        "nombre_usuario":nombre_usuario,
+        "clave":clave,
+        "codigo_autorizacion":codigo_autorizacion,
+    },{
+        headers: {
+            Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+      }
+    })
+    .then(function (response) {
+      setDisplay(false);
+      setShow(true);
+    })
+    .catch(function (error) {
+      console.log(error);
+      setDisplay(true);
+    });
+  };
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -122,15 +149,7 @@ export default function Registrarse() {
                         .required('La confirmación de contraseña es obligatoria'),
                 })}
                 onSubmit={fields => {
-                  const user={
-                    usuario:"ignals",
-                    nombre:"Ignacio",
-                    apellido:"Matrix",
-                }
-                setUser(user);
-                history.push({
-                  pathname: '/',
-                })
+                  handleRegister(fields.codigoAutorizacion, fields.dni, fields.usuario, fields.contraseña)
               }}
                 render={({ errors, status, touched, handleChange}) => (
                     <Form>
@@ -155,7 +174,7 @@ export default function Registrarse() {
                             <Field name="confirmcontraseña" type="password"  placeholder="Confirmar Contraseña" className={'form-control' + (errors.confirmcontraseña && touched.confirmcontraseña ? ' is-invalid' : '')} />
                             <ErrorMessage name="confirmcontraseña" component="div" className="invalid-feedback" />
                         </div>
-                        
+                        {display && ( <Alert severity="error">Ha ocurrido un error al registrar el usuario.</Alert>)}
                       </div>
                         <div className="form-group">
                             <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary">REGISTRARSE</button>
@@ -169,6 +188,19 @@ export default function Registrarse() {
             </Box>
         </div>
       </Grid>
+      <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Usuario registrado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El usuario ha sido registrado exitosamente.</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
     </Grid>
   );
 }
