@@ -19,7 +19,6 @@ function BuscarCrearCuenta (props){
             history.push({
             pathname: '/ResumenCuenta',
             state:clienteBuscado})
-            setDisplayAccount(true);
         }else{
             setDisplayAccount(true);
         }
@@ -61,10 +60,12 @@ function BuscarCrearCuenta (props){
     const[displayAccount, setDisplayAccount]=useState(false);
     const[displayCorriente,setDisplayCorriente]=useState(true);
     const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
+    const[client,setClient]=useState(false);
     const [clienteBuscado,setclienteBuscado]=useState({})
     const manageClienteBuscado = (response) =>{
         console.log(response)
         setclienteBuscado({
+            id:response.data.id,
             nombre: response.data.nombre,
             apellido: response.data.apellido,
             dni: response.data.dni,
@@ -83,8 +84,6 @@ function BuscarCrearCuenta (props){
             pregunta2_respuesta: response.data.pregunta2_respuesta,
             pregunta3: response.data.pregunta3,
             pregunta3_respuesta: response.data.pregunta3_respuesta,
-            cuenta_caja_ahorro:'423423',
-            cuenta_cuenta_corriente:'234124',
             });
             setDisplay(false);
             if(clienteBuscado.cuenta_cuenta_corriente===""){
@@ -108,9 +107,11 @@ function BuscarCrearCuenta (props){
         .then(function (response) {
           //console.log(response)
           manageClienteBuscado(response);
+          setClient(true);
         })
         .catch(function (error) {
           console.log(error);
+          setClient(false);
           setDisplay(true);
         });
       };
@@ -122,7 +123,7 @@ function BuscarCrearCuenta (props){
                 <div><h2 className={classes.title}>Resumen cuenta bancaria</h2>
                     <Card className="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
                         <div className={classes.modify}>
-                        <h7 className={classes.title1}>Buscar clienteBuscado por DNI </h7>
+                        <h7 className={classes.title1}>Buscar cliente por DNI/CBU/CUIT</h7>
                         <Formik 
                         initialValues={{
                             Buscador: '',
@@ -149,14 +150,12 @@ function BuscarCrearCuenta (props){
                             </Form>
                          )}
                         />
-                        {clienteBuscado && (
+                        {client && (
                         <div className={classes.title1}>
                             <h7 >Nombre: </h7>{clienteBuscado.nombre}<br />
                             <h7>Apellido: </h7> {clienteBuscado.apellido} <br />
                             <h7 >DNI: </h7>{clienteBuscado.dni}<br />
                             <h7>CUIT: </h7>{clienteBuscado.cuit}<br />
-                            <h7>Cuenta/s: </h7><br />
-                            <h7>Caja de ahorro: </h7>{clienteBuscado.cuenta_caja_ahorro}<br /><h7>Cuenta corriente: </h7>{clienteBuscado.cuenta_cuenta_corriente}<br />
                             <form>
                                 <h7>Seleccione una cuenta: </h7>
                                 <select

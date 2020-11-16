@@ -10,7 +10,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import axios from 'axios';
 function BuscarCrearCuenta (props){
     const [user, setUser]=useState(props.location.state);  
-    const [cliente, setCliente]=useState();
+    const [cliente, setCliente]=useState(false);
     const useStyles=makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -46,6 +46,7 @@ function BuscarCrearCuenta (props){
         const manageCliente = (response) =>{
             console.log(response)
             setClienteBuscado({
+                id:response.data.id,
                 nombre: response.data.nombre,
                 apellido: response.data.apellido,
                 dni: response.data.dni,
@@ -67,8 +68,55 @@ function BuscarCrearCuenta (props){
                 cuenta_caja_ahorro:'',
                 cuenta_cuenta_corriente:'',
                 });
+                setCliente(true)
         };
-
+        const manageClienteBuscadoCuit = (response) =>{
+            console.log(response)
+            setClienteBuscado({
+                id:response.data.id,
+                tipo: response.data.tipo,
+                nombre: response.data.nombre,
+                apellido: response.data.apellido,
+                dni: response.data.dni,
+                cuit: response.data.cuit,
+                email: response.data.email,
+                domicilio_ciudad: response.data.domicilio_ciudad,
+                domicilio_calle: response.data.domicilio_calle,
+                domicilio_numero: response.data.domicilio_numero,
+                domicilio_barrio: response.data.domicilio_barrio,
+                domicilio_piso: response.data.domicilio_piso,
+                domicilio_apartamento: response.data.domicilio_apartamento,
+                fecha_nacimiento: response.data.fecha_nacimiento,
+                pregunta1: response.data.pregunta1,
+                pregunta1_respuesta: response.data.pregunta1_respuesta,
+                pregunta2: response.data.pregunta2,
+                pregunta2_respuesta: response.data.pregunta2_respuesta,
+                pregunta3: response.data.pregunta3,
+                pregunta3_respuesta: response.data.pregunta3_respuesta,
+                });
+                console.log(clienteBuscado)
+                setDisplay(false);
+                setCliente(true);
+        };
+        const handleBuscarclienteBuscadoCuit= (cuit) => {
+            axios.post('https://integracion-banco.herokuapp.com/clientes/cuit', {
+              "cuit": cuit
+            },{
+                headers: {
+                    Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+              }
+            })
+            .then(function (response) {
+              //console.log(response)
+              manageClienteBuscadoCuit(response);
+              setDisplay(false);
+            })
+            .catch(function (error) {
+              console.log(error);
+              setDisplay(true);
+              setCliente(false);
+            });
+          };
         const handleBuscarCliente = (dni) => {
             axios.post('https://integracion-banco.herokuapp.com/clientes/dni', {
               "dni": dni
@@ -79,6 +127,7 @@ function BuscarCrearCuenta (props){
             })
             .then(function (response) {
               //console.log(response)
+              setDisplay(false);
               manageCliente(response);
             })
             .catch(function (error) {
@@ -102,11 +151,20 @@ function BuscarCrearCuenta (props){
                             Buscador: Yup.string()
                                 .matches(Number,'Ingrese únicamente números')
                                 .required('El campo es obligatorio (*)')
-                                .min(7, 'El DNI ingresado no es correcto')
-                                .max(8, 'El DNI ingresado no es correcto'),
                         })}
                         onSubmit={fields => {
-                            handleBuscarCliente(fields.Buscador)
+                            if((fields.Buscador).length>6 && (fields.Buscador).length<9){
+                                handleBuscarCliente(fields.Buscador)
+                                console.log("dni")
+                            }else if((fields.Buscador).length===11){
+                                handleBuscarclienteBuscadoCuit(fields.Buscador)
+                                console.log("CUIT")
+                            }else if((fields.Buscador).length===22){
+                                console.log("CBU")
+                            }else{
+                            setDisplay(true);
+                            setCliente(false);
+                            }
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
@@ -120,14 +178,12 @@ function BuscarCrearCuenta (props){
                             </Form>
                          )}
                         />
-                        {clienteBuscado && (
+                        {cliente && (
                         <div className={classes.title1}>
                             <h7 >Nombre: </h7>{clienteBuscado.nombre}<br />
                             <h7 >Apellido: </h7> {clienteBuscado.apellido} <br />
                             <h7>DNI: </h7>{clienteBuscado.dni}<br />
                             <h7>CUIT: </h7>{clienteBuscado.cuit}<br />
-                            <h7>Cuenta/s: </h7><br /><h7 >Caja de ahorro: </h7>
-                            {clienteBuscado.cuenta_caja_ahorro}<br /><h7 >Cuenta corriente: </h7>{clienteBuscado.cuenta_cuenta_corriente}<br />
                                 <Link to={{
                                     pathname: '/CrearCuenta',
                                     state:clienteBuscado}}><Button style ={{backgroundColor:"#BF6D3A", color:"white"}} >  Siguiente  </Button></Link>
