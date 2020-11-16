@@ -31,9 +31,8 @@ function BuscarDeshabilitarCliente (){
             state:JSON.parse(localStorage.getItem('user')) })        
     };
     const manageclienteEliminar = () =>{
-        axios.delete('https://integracion-banco.herokuapp.com/clientes', {
-              "id": (cliente.id)
-            },{
+      console.log(cliente)
+        axios.delete(`https://integracion-banco.herokuapp.com/clientes/${clienteBuscado.id}`, {
                 headers: {
                     Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
               }
