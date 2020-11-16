@@ -7,9 +7,12 @@ import { Alert } from '@material-ui/lab';
 import history from './../history';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from 'react-bootstrap/Modal';
+import axios from 'axios';
+
 
 function CrearCuenta (props){
     const [cliente, setCliente]=useState(props.location.state);
+    console.log(cliente)
     const useStyles = makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -46,6 +49,34 @@ function CrearCuenta (props){
     const [token, setToken] = useState("99939753698000")
     const Number = /^[0-9]+$/;
     const classes = useStyles();
+
+    const manageCuentaCreada = (data) => {
+        
+    }
+    const handleCrearCuenta = (fondo, tipo) => {
+        if(tipo=="CAJA_DE_AHORRO"){
+            fondo="0"
+        }
+        setCuenta(tipo);
+        console.log("rompio nasheeee")
+        const saldo = "0"
+        axios.post('https://integracion-banco.herokuapp.com/cuentas', {
+          "tipo": tipo,
+          "cliente_id": cliente.id,
+        },{
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
+        })
+        .then(function (response) {
+          console.log("esta es la respuesta ")
+          console.log(response)
+          manageCuentaCreada(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      };
     
         return (
             <div className="Modificar">
@@ -66,8 +97,8 @@ function CrearCuenta (props){
                 domicilio_calle: (cliente.domicilio_calle),
                 domicilio_numero: (cliente.domicilio_numero),
                 domicilio_barrio: (cliente.domicilio_barrio),
-                piso:  (cliente.piso),
-                date: (cliente.fechanac),
+                piso:  (cliente.domicilio_piso),
+                date: (cliente.fecha_nacimiento),
                 tipoCuenta: "",
                 fondo: "",
             }}
@@ -101,8 +132,6 @@ function CrearCuenta (props){
                 domicilio_numero:Yup.string()
                 .required('El campo es obligatorio (*)')
                 .matches(Number,'Ingrese únicamente números'),
-                piso: Yup.string()
-                .required('El campo es obligatorio (*)'),
                 date: Yup.string()
                     .required('El campo es obligatorio (*)'),
                 tipoCuenta: Yup.string()
@@ -111,10 +140,7 @@ function CrearCuenta (props){
                     .matches(Number,'Ingrese únicamente números')
             })}
             onSubmit={fields => {
-                if(fields.tipoCuenta=="ahorro"){
-                    fields.fondo=""
-                }
-                setCuenta(fields.tipoCuenta)
+                handleCrearCuenta(fields.fondo, fields.tipoCuenta)
             }}
             render={({ errors, status, touched }) => (
                 <Card className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">
@@ -189,8 +215,8 @@ function CrearCuenta (props){
                         className={'form-control' + (errors.tipoCuenta && touched.tipoCuenta? ' is-invalid' : '')}
                     >
                         <option value="" label="Seleccione el tipo de cuenta" />
-                        <option value="ahorro" label="Caja de ahorro" />
-                        <option value="corriente" label="Cuenta corriente" />
+                        <option value="CAJA_DE_AHORRO" label="Caja de ahorro" />
+                        <option value="CUENTA_CORRIENTE" label="Cuenta corriente" />
                     </Field>
                     <ErrorMessage name="tipoCuenta" component="div" className="invalid-feedback" />
                 </div>
@@ -225,7 +251,7 @@ function CrearCuenta (props){
                 <h7 style={{fontWeight: 'bold'}}>Nombre: </h7>{cliente.nombre}<br />
                 <h7 style={{fontWeight: 'bold'}}>Apellido: </h7> {cliente.apellido} <br />
                 <h7 style={{fontWeight: 'bold'}}>DNI: </h7>{cliente.dni}<br />
-                <h7 style={{fontWeight: 'bold'}}>Tipo de Cuenta: </h7>{cuenta==="ahorro"? "Caja de ahorro" : "Cuenta corriente"}<br />
+                <h7 style={{fontWeight: 'bold'}}>Tipo de Cuenta: </h7>{cuenta==="CAJA_DE_AHORRO"? "Caja de ahorro" : "Cuenta corriente"}<br />
                 <h7 style={{fontWeight: 'bold'}}>CBU: </h7>{cbu}<br />
             </Modal.Body>
             <Modal.Footer>

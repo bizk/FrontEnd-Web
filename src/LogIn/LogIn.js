@@ -79,7 +79,7 @@ export default function LogIn() {
   const manageUsuario=(data,usuario,contraseña)=>{
     setDisplay(false);
     console.log(data)
-    localStorage.setItem('user', JSON.stringify(data.data.user.cliente.apellido));//Guardo el nombre de usuario
+    localStorage.setItem('user', JSON.stringify(data.data.user.entidad.apellido));//Guardo el nombre de usuario
     console.log(data.data.user.rol)
     localStorage.setItem('alias', JSON.stringify(data.data.user.rol));//Guardo el rol
     localStorage.setItem('token',JSON.stringify(data.data.user["x-access-token"]));//Guardo el token*/

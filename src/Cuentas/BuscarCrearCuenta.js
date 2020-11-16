@@ -46,6 +46,7 @@ function BuscarCrearCuenta (props){
         const manageCliente = (response) =>{
             console.log(response)
             setClienteBuscado({
+                id: response.data.id, 
                 nombre: response.data.nombre,
                 apellido: response.data.apellido,
                 dni: response.data.dni,
