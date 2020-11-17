@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import { Card} from 'react-bootstrap';
 import Navigation from './components/Navbar';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,6 +11,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import axios from 'axios';
+
 function ResumenCuenta (props){
         var today = new Date(),
         date = today.getDate()+ '-' + (today.getMonth() + 1)+ '-' +today.getFullYear();
@@ -58,52 +60,51 @@ function ResumenCuenta (props){
                 minWidth: 650,
               },
           }));
-          function createData(fecha, concepto, cantidad) {
-            return { fecha, concepto, cantidad };
-          }
           
-          const rows = [
-            createData("20-11-2020", "Deposito","+ $25.000,00"),
-            createData("15-11-2020", "Extraccion","- $15.000,00"),
-            createData("03-11-2020", "Pago a proveedor","- $7.500,00"),
-          ];
+    const userName = JSON.parse(localStorage.getItem('user'))
+    const [cuenta,setCuentas] = useState([])
+	const url = 'https://integracion-banco.herokuapp.com/cuentas';
+    const urlfacturas = 'https://integracion-banco.herokuapp.com/facturas';
+    const temp = useState([]);
+    const [saldo,setSaldo] = useState('')
+    const [data,setData] = useState({})
+	useEffect(() => {
+		const fetchData = async () => {
+		const result = await axios.get(url, {
+		  headers: {
+			  Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+		    }
+	    })
+		  setCuentas(result.data.cuentas)
+		} 
+	  fetchData()
+    },[cuenta]);
+
+    const handleResumen = (index) => {
+        
+        axios.get('https://integracion-banco.herokuapp.com/cuentas/'+(cuenta[index].numero_cuenta)+'/resumen', {
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
+        })
+        .then(function (response) {
+              //console.log(response)  
+              setSaldo(response.data.cuenta.saldo)
+                for (let i = 0; i < response.data.movimientos.length; ++i) {
+                //console.log(response.data.movimientos[i]);
+                temp.push(response.data.movimientos[i]);
+            } 
+            console.log(temp)
+            setVer(true);
+        })
+    }
           
         const Number = /^[0-9]+$/;
-        const [saldo, setSaldo]=useState(2500);
         const[ver,setVer]=useState(false);
-        const cliente={
-            nombre: "Ignacio",
-            apellido: "Matrix",
-            dni: "39753698",
-            cuit: "21034698721",
-            email:"ignacioals98@hotmail.com",
-            domicilio:"Avenida Cordoba 275",
-            piso:"13 A",
-            fechanac:"1997-05-20",
-            preg1: "Primer auto",
-            resp1: "mercedes benz a250",
-            preg2: "Equipo favorito de fútbol",
-            resp2: "River Plate",
-            preg3: "Nombre de mascota",
-            resp3: "Lola",
-            cuentas: {
-                cajaahorro:"5565418547654",
-                cuentacorriente: "",
-            }
-            };
         const[displayAhorro, setDisplayAhorro]=useState(false);
         const[displayCorriente, setDisplayCorriente]=useState(false);
         const change = () =>{
-            if (cliente.cuentas.cajaahorro ===""){
-                setDisplayAhorro(false);
-            }else{
-                    setDisplayAhorro(true);
-            }
-            if(cliente.cuentas.cuentacorriente ===""){
-                setDisplayCorriente(false);
-            }else{
-                setDisplayCorriente(true)
-            }
+           
         }
         const classes = useStyles();
         return (
@@ -117,8 +118,7 @@ function ResumenCuenta (props){
             <div className={classes.modify}>
             <div className={classes.title1}>
                 <h5>Datos de la cuenta: </h5>
-                <h7>Nombre: </h7>{cliente.nombre}<br />
-                <h7>Apellido: </h7> {cliente.apellido} <br />
+                <h7>Nombre: </h7>{userName}<br />
             <div class="container">
             <div class="row">
                 <Formik
@@ -130,8 +130,8 @@ function ResumenCuenta (props){
                     .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
-                setVer(true);
                 console.log(fields.cuenta)
+                handleResumen(fields.cuenta)
             }}
             render={({ errors, status, touched }) => (
                 <Form>
@@ -139,12 +139,13 @@ function ResumenCuenta (props){
                     <label htmlFor="tipo">Seleccione una cuenta</label>
                     <Field as="select"
 						name="cuenta"
-						onClick={change}
+						onClick={() => change()}
                         className={'form-control' + (errors.cuenta && touched.cuenta? ' is-invalid' : '')}
                     >
                         <option value="" label="Seleccione una cuenta" />
-                        {displayAhorro &&(<option value="ahorro" label={cliente.cuentas.cajaahorro} />)}
-                        {displayCorriente && (<option value="corriente" label={cliente.cuentas.cuentacorriente} />)}
+                        {cuenta.map((cuentas,i) => <option key={i} value={i} label={cuentas.numero_cuenta} />)}
+                        {/* {displayAhorro &&(<option value="ahorro" label={cuenta[0].numero_cuenta} />)}
+                        {displayCorriente && (<option value="corriente" label={cuenta[1].numero_cuenta} />)} */}
                     </Field>
                     <ErrorMessage name="cuenta" component="div" className="invalid-feedback" />
                 </div>
@@ -175,9 +176,9 @@ function ResumenCuenta (props){
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {rows.map((row) => (
-                    <TableRow key={row.fecha}>
-                    <TableCell align="left">{row.fecha}</TableCell>
+                {temp.map((row,i) => ( 
+                    <TableRow key={i}>
+                    <TableCell align="left">{row.fecha_creacion}</TableCell>
                     <TableCell align="left">{row.concepto}</TableCell>
                     <TableCell align="right">{row.cantidad}</TableCell>
                     </TableRow>

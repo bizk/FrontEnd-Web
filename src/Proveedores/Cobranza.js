@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import axios from 'axios';
 import Navigation from './components/Navbar';
 import { Card} from 'react-bootstrap';
@@ -6,41 +6,33 @@ import { Alert } from '@material-ui/lab';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-const BASE_URL = 'http://localhost:3000/';
+const BASE_URL = 'https://integracion-banco.herokuapp.com/';
 
-class Cobranza extends Component {
-	constructor(props) {
-	super(props);
-	  this.state = {
-		selectedFile: null,
-		display:false,
-		display1:false,
-		cliente:{ nombre: "Ignacio",
-		apellido: "Matrix",
-		dni: "39753698",
-		cuit: "21034698721",
-		email:"ignacioals98@hotmail.com",
-		domicilio:"Avenida Cordoba 275",
-		piso:"13 A",
-		fechanac:"1997-05-20",
-		preg1: "Primer auto",
-		resp1: "mercedes benz a250",
-		preg2: "Equipo favorito de fútbol",
-		resp2: "River Plate",
-		preg3: "Nombre de mascota",
-		resp3: "Lola",
-		cuentas: {
-			cajaahorro:"5565418547654",
-			cuentacorriente: "",
+function Cobranza () {
+
+	const [displayAhorro,setDisplayAhorro] = useState(false)
+	const [displayCorriente,setDisplayCorriente]=useState(false)
+	const [display, setDisplay] = useState(false)
+	const [display1,setDisplay1] = useState(false)
+	const [displayCargar, setDisplayCargar]=useState(false)	
+	const [selectedFile,setSelectedFile]=useState({})
+	const [cuenta,setCuentas] = useState([])
+	const url = 'https://integracion-banco.herokuapp.com/cuentas';
+	const urlfacturas = 'https://integracion-banco.herokuapp.com/facturas/cargar';
+	useEffect(() => {
+		const fetchData = async () => {
+		const result = await axios.get(url, {
+		  headers: {
+			  Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
 		}
-		},
-		displayAhorro:false,
-		displayCorriente:false,
-		displayCargar:false,
-	  }   
-	};
-	change = () =>{
-		if (this.state.cliente.cuentas.cajaahorro ===""){
+	  })
+		  setCuentas(result.data.cuentas)
+		} 
+	  fetchData()
+},[cuenta]);
+
+	const change = () =>{
+		/* if (this.state.cliente.cuentas.cajaahorro ===""){
 			this.setState({
 				displayAhorro:false
 			});
@@ -57,32 +49,37 @@ class Cobranza extends Component {
 			this.setState({
 				displayCorriente:true
 			});
-		}
+		} */
 	}
-	changeHandler = event=>{
+	const [index,setIndex]=useState('')
+	const changeHandler = event =>{
     var uploadFile = event.target.files[0];    
-        this.setState({
-		    selectedFile: uploadFile
-		});
+        setSelectedFile(uploadFile);
 	}
-	fileUpload = () => {
+	const fileUpload = () => {
 	const formData = new FormData();    
-	formData.append('file', this.state.selectedFile)    
-	axios.post(BASE_URL, formData)
+	formData.append('file', selectedFile)    
+	console.log(index)
+	axios.post(urlfacturas, 
+		{
+			"archivo": formData,
+			"numero_cuenta": cuenta[index].numero_cuenta
+		},{
+		headers: {
+			Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+	 	 },
+	})
 	  .then(res => {
-		this.setState({
-		    display1:true
-		});
+		  console.log("ENTRAAAA")
+		console.log(res)
+		setDisplay1(true)
 	  })
 	  .catch(err => {
-		this.setState({
-		    display:true
-		});
+		setDisplay(true)
 	  });
 
 	};
 	
-	render() {
 	  return (
         <div>
             <Navigation />
@@ -110,10 +107,9 @@ class Cobranza extends Component {
                     .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
-				this.setState({
-					displayCargar:true
-				});
-                console.log(fields.cuenta)
+				setDisplayCargar(true)
+				console.log(fields.cuenta)
+				setIndex(fields.cuenta)
             }}
             render={({ errors, status, touched }) => (
                 <Form>
@@ -121,12 +117,11 @@ class Cobranza extends Component {
                     <label htmlFor="tipo">Seleccione una cuenta</label>
                     <Field as="select"
 						name="cuenta"
-						onClick={this.change}
+						onClick={() => change()}
                         className={'form-control' + (errors.cuenta && touched.cuenta? ' is-invalid' : '')}
                     >
-                        <option value="" label="Seleccione una cuenta" />
-                        {this.state.displayAhorro &&(<option value="ahorro" label={this.state.cliente.cuentas.cajaahorro} />)}
-                        {this.state.displayCorriente && (<option value="corriente" label={this.state.cliente.cuentas.cuentacorriente} />)}
+						<option value="" label="Seleccione una cuenta" />
+                        {cuenta.map((cuentas,i) => <option key={i} value={i} label={cuentas.numero_cuenta} />)}
                     </Field>
                     <ErrorMessage name="cuenta" component="div" className="invalid-feedback" />
                 </div>
@@ -144,17 +139,17 @@ class Cobranza extends Component {
 			<div className="container">
 				<div className="row">
 					<div className="col-md-5 offset-md-3 mt-4">					
-					{this.state.displayCargar &&(<form method="post" action="#" id="#">
+					{displayCargar &&(<form method="post" action="#" id="#">
 							<div className="form-group files">
 								<h2>Cargue su archivo </h2>
-								{this.state.display && (
+								{display && (
                             	<Alert severity="error">Ha ocurrido un error al cargar el archivo</Alert>)}	
-								{this.state.display1 && (
+								{display1 && (
                             	<Alert severity="success">El archivo ha sido cargado exitosamente</Alert>)}							
-								<input type="file" name="file" className="form-control" onChange={this.changeHandler}/>
+								<input type="file" name="file" className="form-control" onChange={(e) => changeHandler(e)}/>
 							</div>
 							<div className="col-md-6 pull-right">
-								<button width="100%" type="button" className="btn btn-info" style={{backgroundColor:"#BF6D3A", marginBottom:"30px"}} onClick={this.fileUpload}>Cargar archivo</button>
+								<button width="100%" type="button" className="btn btn-info" style={{backgroundColor:"#BF6D3A", marginBottom:"30px"}} onClick={() => fileUpload()}>Cargar archivo</button>
 							</div>
 						</form>)}
 					</div>
@@ -163,5 +158,4 @@ class Cobranza extends Component {
 		</div>
 	  );
 	}
-}
 export default Cobranza;
