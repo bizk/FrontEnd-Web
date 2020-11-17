@@ -63,11 +63,9 @@ function ResumenCuenta (props){
           
     const userName = JSON.parse(localStorage.getItem('user'))
     const [cuenta,setCuentas] = useState([])
-	const url = 'https://integracion-banco.herokuapp.com/cuentas';
-    const urlfacturas = 'https://integracion-banco.herokuapp.com/facturas';
-    const temp = useState([]);
+    const url = 'https://integracion-banco.herokuapp.com/cuentas';
+    const [movimientos, setMovimientos] = useState([]);
     const [saldo,setSaldo] = useState('')
-    const [data,setData] = useState({})
 	useEffect(() => {
 		const fetchData = async () => {
 		const result = await axios.get(url, {
@@ -80,9 +78,8 @@ function ResumenCuenta (props){
 	  fetchData()
     },[cuenta]);
 
-    const handleResumen = (index) => {
-        
-        axios.get('https://integracion-banco.herokuapp.com/cuentas/'+(cuenta[index].numero_cuenta)+'/resumen', {
+    const handleResumen = (index) => {       
+      /*   axios.get('https://integracion-banco.herokuapp.com/cuentas/'+(cuenta[index].numero_cuenta)+'/resumen', {
             headers: {
                 Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
           }
@@ -96,7 +93,26 @@ function ResumenCuenta (props){
             } 
             console.log(temp)
             setVer(true);
+        }) */
+        axios.get('https://integracion-banco.herokuapp.com/cuentas/'+(cuenta[index].numero_cuenta)+'/resumen', {
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
         })
+            .then(function (response) {
+                let temp=[];
+                setSaldo(response.data.cuenta.saldo)
+                for (let i = 0; i < response.data.movimientos.length; ++i) {
+                    var tempi=[]
+                    tempi.push(response.data.movimientos[i].fecha_creacion, response.data.movimientos[i].concepto, response.data.movimientos[i].cantidad);
+                    temp.push(tempi);
+                }
+                setMovimientos(temp);
+                setVer(true);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
     }
           
         const Number = /^[0-9]+$/;
@@ -176,11 +192,11 @@ function ResumenCuenta (props){
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {temp.map((row,i) => ( 
+                {movimientos.map((row,i) => ( 
                     <TableRow key={i}>
-                    <TableCell align="left">{row.fecha_creacion}</TableCell>
-                    <TableCell align="left">{row.concepto}</TableCell>
-                    <TableCell align="right">{row.cantidad}</TableCell>
+                    <TableCell align="left">{row[0]}</TableCell>
+                    <TableCell align="left">{row[1]}</TableCell>
+                    <TableCell align="right">{row[2]}</TableCell>
                     </TableRow>
                 ))}
                 </TableBody>

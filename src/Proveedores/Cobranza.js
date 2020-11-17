@@ -66,8 +66,9 @@ function Cobranza () {
 			"numero_cuenta": cuenta[index].numero_cuenta
 		},{
 		headers: {
-			Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
-	 	 },
+			Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')), //the token is a variable which holds the token
+			'Access-control-Allow-Origin': true
+		},
 	})
 	  .then(res => {
 		  console.log("ENTRAAAA")
