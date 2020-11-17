@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useState,useEffect  } from 'react';
 import { Button, Card, ListGroup } from 'react-bootstrap';
 import Navigation from '../components/Navbar';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,13 +10,30 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import axios from 'axios';
+
 function ResumenCuenta (props){
-    console.log(props.location.state)
     const [cliente, setCliente]=useState(props.location.state);
-    const conceptos={
-            alias:"DEPOSITO",
-            descripcion:"Deposito"
-        };
+    const [movimientos, setMovimientos] = useState([]);
+    useEffect(() => {
+          axios.get('https://integracion-banco.herokuapp.com/cuentas/'+(cliente.select.numero_cuenta)+'/resumen', {
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
+        })
+            .then(function (response) {
+                let temp=[];
+                for (let i = 0; i < response.data.movimientos.length; ++i) {
+                    var tempi=[]
+                    tempi.push(response.data.movimientos[i].fecha_creacion, response.data.movimientos[i].concepto, response.data.movimientos[i].cantidad);
+                    temp.push(tempi);
+                }
+                setMovimientos(temp);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+    });
         var today = new Date(),
         date = today.getDate()+ '-' + (today.getMonth() + 1)+ '-' +today.getFullYear();
         const useStyles=makeStyles((theme) => ({
@@ -67,12 +84,6 @@ function ResumenCuenta (props){
             return { fecha, concepto, cantidad };
           }
           
-          const rows = [
-            createData("20-11-2020", "Deposito","+ $25.000,00"),
-            createData("15-11-2020", "Extraccion","- $15.000,00"),
-            createData("03-11-2020", "Pago a proveedor","- $7.500,00"),
-          ];
-          
         const Number = /^[0-9]+$/;
         const [saldo, setSaldo]=useState(2500);
         const classes = useStyles();
@@ -107,11 +118,11 @@ function ResumenCuenta (props){
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {rows.map((row) => (
+                {movimientos.map((row) => (
                     <TableRow key={row.fecha}>
-                    <TableCell align="left">{row.fecha}</TableCell>
-                    <TableCell align="left">{row.concepto}</TableCell>
-                    <TableCell align="right">{row.cantidad}</TableCell>
+                    <TableCell align="left">{row[0]}</TableCell>
+                    <TableCell align="left">{row[1]}</TableCell>
+                    <TableCell align="right">{row[2]}</TableCell>
                     </TableRow>
                 ))}
                 </TableBody>

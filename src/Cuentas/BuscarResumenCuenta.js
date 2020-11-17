@@ -8,7 +8,7 @@ import { Alert } from '@material-ui/lab';
 import SearchIcon from '@material-ui/icons/Search';
 import history from '../history';
 import axios from 'axios';
-function BuscarCrearCuenta (props){
+function BuscarResumenCuenta (props){
     const [user, setUser]=useState(props.location.state);  
     const [currentAccount, setCurrentAccount] = useState();
     const [selectAccount, setSelectedAccount] = useState("");
@@ -304,4 +304,4 @@ function BuscarCrearCuenta (props){
             </div>
         );
 }
-export default BuscarCrearCuenta;
+export default BuscarResumenCuenta;
