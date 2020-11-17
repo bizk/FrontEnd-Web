@@ -53,16 +53,14 @@ function Cobranza () {
 	}
 	const [index,setIndex]=useState('')
 	const changeHandler = event =>{
-    var uploadFile = event.target.files[0];    
+    	var uploadFile = event.target.files[0];    
         setSelectedFile(uploadFile);
 	}
 	const fileUpload = () => {
-	const formData = new FormData();    
-	formData.append('file', selectedFile)    
-	console.log(index)
+	console.log(selectedFile)
 	axios.post(urlfacturas, 
 		{
-			"archivo": formData,
+			"archivo": selectedFile,
 			"numero_cuenta": cuenta[index].numero_cuenta
 		},{
 		headers: {
@@ -71,11 +69,11 @@ function Cobranza () {
 		},
 	})
 	  .then(res => {
-		  console.log("ENTRAAAA")
-		console.log(res)
+		console.log("factura cargada")
 		setDisplay1(true)
 	  })
 	  .catch(err => {
+		console.log("no se cargaron las facturas")
 		setDisplay(true)
 	  });
 
