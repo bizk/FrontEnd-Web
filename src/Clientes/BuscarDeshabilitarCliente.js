@@ -79,70 +79,56 @@ function BuscarDeshabilitarCliente (){
         const manageClienteBuscado = (response) =>{
             console.log(response)
             setclienteBuscado({
-                id:response.data.id,
-                tipo: response.data.tipo,
-                nombre: response.data.nombre,
-                apellido: response.data.apellido,
-                dni: response.data.dni,
-                cuit: response.data.cuit,
-                email: response.data.email,
-                domicilio_ciudad: response.data.domicilio_ciudad,
-                domicilio_calle: response.data.domicilio_calle,
-                domicilio_numero: response.data.domicilio_numero,
-                domicilio_barrio: response.data.domicilio_barrio,
-                domicilio_piso: response.data.domicilio_piso,
-                domicilio_apartamento: response.data.domicilio_apartamento,
-                fecha_nacimiento: response.data.fecha_nacimiento,
-                pregunta1: response.data.pregunta1,
-                pregunta1_respuesta: response.data.pregunta1_respuesta,
-                pregunta2: response.data.pregunta2,
-                pregunta2_respuesta: response.data.pregunta2_respuesta,
-                pregunta3: response.data.pregunta3,
-                pregunta3_respuesta: response.data.pregunta3_respuesta,
+              id:response.data.cliente.id,
+              nombre: response.data.cliente.nombre,
+              apellido: response.data.cliente.apellido,
+              dni: response.data.cliente.dni,
+              cuit: response.data.cliente.cuit,
+              email: response.data.cliente.email,
+              domicilio_ciudad: response.data.cliente.domicilio_ciudad,
+              domicilio_calle: response.data.cliente.domicilio_calle,
+              domicilio_numero: response.data.cliente.domicilio_numero,
+              domicilio_barrio: response.data.cliente.domicilio_barrio,
+              domicilio_piso: response.data.cliente.domicilio_piso,
+              domicilio_apartamento: response.data.cliente.domicilio_apartamento,
+              fecha_nacimiento: response.data.cliente.fecha_nacimiento,
+              pregunta1: response.data.cliente.pregunta1,
+              pregunta1_respuesta: response.data.cliente.pregunta1_respuesta,
+              pregunta2: response.data.cliente.pregunta2,
+              pregunta2_respuesta: response.data.cliente.pregunta2_respuesta,
+              pregunta3: response.data.cliente.pregunta3,
+              pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
                 });
                 console.log(clienteBuscado)
                 setDisplay(false);
                 setCliente(true);
         };
-        const manageClienteBuscadoCuit = (response) =>{
-            console.log(response)
-            setclienteBuscado({
-                id:response.data.id,
-                tipo: response.data.tipo,
-                nombre: response.data.nombre,
-                apellido: response.data.apellido,
-                dni: response.data.dni,
-                cuit: response.data.cuit,
-                email: response.data.email,
-                domicilio_ciudad: response.data.domicilio_ciudad,
-                domicilio_calle: response.data.domicilio_calle,
-                domicilio_numero: response.data.domicilio_numero,
-                domicilio_barrio: response.data.domicilio_barrio,
-                domicilio_piso: response.data.domicilio_piso,
-                domicilio_apartamento: response.data.domicilio_apartamento,
-                fecha_nacimiento: response.data.fecha_nacimiento,
-                pregunta1: response.data.pregunta1,
-                pregunta1_respuesta: response.data.pregunta1_respuesta,
-                pregunta2: response.data.pregunta2,
-                pregunta2_respuesta: response.data.pregunta2_respuesta,
-                pregunta3: response.data.pregunta3,
-                pregunta3_respuesta: response.data.pregunta3_respuesta,
-                });
-                console.log(clienteBuscado)
-                setDisplay(false);
-                setCliente(true);
+        const handleBuscarclienteBuscadoCbu= (cbu) => {
+          axios.get('https://integracion-banco.herokuapp.com/clientes/cbu?numero='+cbu+'',{
+              headers: {
+                  Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+            }
+          })
+          .then(function (response) {
+              setDisplay(false);
+              manageClienteBuscado(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+            setDisplay(true);
+          });
         };
         const handleBuscarclienteBuscadoCuit= (cuit) => {
-            axios.post('https://integracion-banco.herokuapp.com/clientes/cuit', {
-              "cuit": cuit
-            },{
+          axios.get('https://integracion-banco.herokuapp.com/clientes/cuit?numero='+cuit+'',
+          {
                 headers: {
                     Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
               }
             })
             .then(function (response) {
               //console.log(response)
-              manageClienteBuscadoCuit(response);
+              setDisplay(false);
+              manageClienteBuscado(response);
             })
             .catch(function (error) {
               console.log(error);
@@ -151,15 +137,15 @@ function BuscarDeshabilitarCliente (){
             });
           };
         const handleBuscarclienteBuscado = (dni) => {
-            axios.post('https://integracion-banco.herokuapp.com/clientes/dni', {
-              "dni": dni
-            },{
+          axios.get('https://integracion-banco.herokuapp.com/clientes/dni?numero='+dni+'',
+              {
                 headers: {
                     Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
               }
             })
             .then(function (response) {
               //console.log(response)
+              setDisplay(false);
               manageClienteBuscado(response);
             })
             .catch(function (error) {
@@ -193,6 +179,7 @@ function BuscarDeshabilitarCliente (){
                                 handleBuscarclienteBuscadoCuit(fields.Buscador)
                                 console.log("CUIT")
                             }else if((fields.Buscador).length===22){
+                              handleBuscarclienteBuscadoCbu(fields.Buscador)
                                 console.log("CBU")
                             }else{
                                 setDisplay(true);

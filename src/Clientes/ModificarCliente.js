@@ -146,16 +146,10 @@ function ModificarCliente (props){
                     .required('El campo es obligatorio (*)'),
                 pregunta1: Yup.string()
                     .required('El campo es obligatorio (*)'),
-                respuesta1: Yup.string()
-                .required('El campo es obligatorio (*)'),
                 pregunta2: Yup.string()
                     .required('El campo es obligatorio (*)'),
-                respuesta2: Yup.string()
-                .required('El campo es obligatorio (*)'),
                 pregunta3: Yup.string()
                     .required('El campo es obligatorio (*)'),
-                respuesta3: Yup.string()
-                .required('El campo es obligatorio (*)'),
             })}
             onSubmit={fields => {
                 handleModify(fields.nombre, fields.apellido, fields.tipo, fields.dni, fields.email, fields.cuit, fields.domicilio_ciudad,
@@ -175,7 +169,7 @@ function ModificarCliente (props){
                     >
                         <option value="" label="Seleccione el tipo de cliente" />
                         <option value="PERSONA_FISICA" label="Cliente físico" />
-                        <option value="PERSONA_JURIDICA" label="Cliente jurídico" />
+                        <option value="PROVEEDOR" label="Cliente jurídico" />
                     </Field>
                     <ErrorMessage name="tipo" component="div" className="invalid-feedback" />
                 </div>

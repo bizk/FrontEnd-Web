@@ -24,6 +24,7 @@ function BuscarCrearCuenta (props){
         }
     }
     const changeAccount = (newAccount) => {
+        console.log(clienteBuscado.cuentas)
         setSelectedAccount(newAccount)
     }
     const useStyles=makeStyles((theme) => ({
@@ -61,45 +62,71 @@ function BuscarCrearCuenta (props){
     const[displayCorriente,setDisplayCorriente]=useState(true);
     const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
     const[client,setClient]=useState(false);
-    const [clienteBuscado,setclienteBuscado]=useState({})
+    const [clienteBuscado,setclienteBuscado]=useState({});
+    const [cuentasPicker, setCuentasPicker] = useState([]); //setear las cuentas del usuario mediante consulta de bd con el id del usuario como parametro
     const manageClienteBuscado = (response) =>{
         console.log(response)
+        if(response.data.cliente.cuentas[0]===undefined){
+            setDisplay(true); 
+        }else
+        if(response.data.cliente.cuentas[1]===undefined){
+            setDisplayCajaahorro(false);
         setclienteBuscado({
-            id:response.data.id,
-            nombre: response.data.nombre,
-            apellido: response.data.apellido,
-            dni: response.data.dni,
-            cuit: response.data.cuit,
-            email: response.data.email,
-            domicilio_ciudad: response.data.domicilio_ciudad,
-            domicilio_calle: response.data.domicilio_calle,
-            domicilio_numero: response.data.domicilio_numero,
-            domicilio_barrio: response.data.domicilio_barrio,
-            domicilio_piso: response.data.domicilio_piso,
-            domicilio_apartamento: response.data.domicilio_apartamento,
-            fecha_nacimiento: response.data.fecha_nacimiento,
-            pregunta1: response.data.pregunta1,
-            pregutna1_respuesta: response.data.pregutna1_respuesta,
-            pregunta2: response.data.pregunta2,
-            pregunta2_respuesta: response.data.pregunta2_respuesta,
-            pregunta3: response.data.pregunta3,
-            pregunta3_respuesta: response.data.pregunta3_respuesta,
+            id:response.data.cliente.id,
+            nombre: response.data.cliente.nombre,
+            apellido: response.data.cliente.apellido,
+            dni: response.data.cliente.dni,
+            cuit: response.data.cliente.cuit,
+            email: response.data.cliente.email,
+            domicilio_ciudad: response.data.cliente.domicilio_ciudad,
+            domicilio_calle: response.data.cliente.domicilio_calle,
+            domicilio_numero: response.data.cliente.domicilio_numero,
+            domicilio_barrio: response.data.cliente.domicilio_barrio,
+            domicilio_piso: response.data.cliente.domicilio_piso,
+            domicilio_apartamento: response.data.cliente.domicilio_apartamento,
+            fecha_nacimiento: response.data.cliente.fecha_nacimiento,
+            pregunta1: response.data.cliente.pregunta1,
+            pregunta1_respuesta: response.data.cliente.pregunta1_respuesta,
+            pregunta2: response.data.cliente.pregunta2,
+            pregunta2_respuesta: response.data.cliente.pregunta2_respuesta,
+            pregunta3: response.data.cliente.pregunta3,
+            pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
+            cuentas:{
+                c1:response.data.cliente.cuentas[0],
+            }
             });
-            setDisplay(false);
-            if(clienteBuscado.cuenta_cuenta_corriente===""){
-                clienteBuscado.cuenta_cuenta_corriente="-"
-                setDisplayCorriente(false)
-            }
-            if(clienteBuscado.cuenta_caja_ahorro===""){
-                clienteBuscado.cuenta_caja_ahorro="-"
-                setDisplayCajaahorro(false)
-            }
+        }else{
+            setclienteBuscado({
+                id:response.data.cliente.id,
+                nombre: response.data.cliente.nombre,
+                apellido: response.data.cliente.apellido,
+                dni: response.data.cliente.dni,
+                cuit: response.data.cliente.cuit,
+                email: response.data.cliente.email,
+                domicilio_ciudad: response.data.cliente.domicilio_ciudad,
+                domicilio_calle: response.data.cliente.domicilio_calle,
+                domicilio_numero: response.data.cliente.domicilio_numero,
+                domicilio_barrio: response.data.cliente.domicilio_barrio,
+                domicilio_piso: response.data.cliente.domicilio_piso,
+                domicilio_apartamento: response.data.cliente.domicilio_apartamento,
+                fecha_nacimiento: response.data.cliente.fecha_nacimiento,
+                pregunta1: response.data.cliente.pregunta1,
+                pregunta1_respuesta: response.data.cliente.pregunta1_respuesta,
+                pregunta2: response.data.cliente.pregunta2,
+                pregunta2_respuesta: response.data.cliente.pregunta2_respuesta,
+                pregunta3: response.data.cliente.pregunta3,
+                pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
+                cuentas:{
+                    c1:response.data.cliente.cuentas[0],
+                    c2:response.data.cliente.cuentas[1],
+                }
+                });
+        }
+            setDisplay(false);            
     };
-
-    const handleBuscarclienteBuscado = (dni) => {
-        axios.post('https://integracion-banco.herokuapp.com/clientes/dni', {
-          "dni": dni
-        },{
+    
+    const handleBuscarclienteBuscadoCbu= (cbu) => {
+        axios.get('https://integracion-banco.herokuapp.com/clientes/cbu?numero='+cbu+'',{
             headers: {
                 Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
           }
@@ -111,6 +138,39 @@ function BuscarCrearCuenta (props){
         })
         .catch(function (error) {
           console.log(error);
+          setDisplay(true);
+          setClient(false);
+        });
+      };
+    const handleBuscarclienteBuscadoCuit= (cuit) => {
+        axios.get('https://integracion-banco.herokuapp.com/clientes/cuit?numero='+cuit+'',{
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
+        })
+        .then(function (response) {
+          //console.log(response)
+          manageClienteBuscado(response);
+          setClient(true);
+        })
+        .catch(function (error) {
+          console.log(error);
+          setDisplay(true);
+          setClient(false);
+        });
+      };
+    const handleBuscarCliente = (dni) => {
+        axios.get('https://integracion-banco.herokuapp.com/clientes/dni?numero='+dni+'',{
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
+        })
+        .then(function (response) {
+          //console.log(response)
+          manageClienteBuscado(response);
+          setClient(true);
+        })
+        .catch(function (error) {
           setClient(false);
           setDisplay(true);
         });
@@ -132,11 +192,21 @@ function BuscarCrearCuenta (props){
                             Buscador: Yup.string()
                                 .matches(Number,'Ingrese únicamente números')
                                 .required('El campo es obligatorio (*)')
-                                .min(7, 'El DNI ingresado no es correcto')
-                                .max(8, 'El DNI ingresado no es correcto'),
                         })}
                         onSubmit={fields => {
-                                handleBuscarclienteBuscado(fields.Buscador)
+                            if((fields.Buscador).length>6 && (fields.Buscador).length<9){
+                                handleBuscarCliente(fields.Buscador)
+                                console.log("dni")
+                            }else if((fields.Buscador).length===11){
+                                handleBuscarclienteBuscadoCuit(fields.Buscador)
+                                console.log("CUIT")
+                            }else if((fields.Buscador).length===22){
+                                handleBuscarclienteBuscadoCbu(fields.Buscador)
+                                console.log("CBU")
+                            }else{
+                            setDisplay(true);
+                            setClient(false);
+                            }
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>
@@ -163,8 +233,8 @@ function BuscarCrearCuenta (props){
                                     value={currentAccount}
                                 >
                                     <option value="">Seleccione una cuenta</option>
-                                    {displayCajaahorro && (<option value="ahorro">{clienteBuscado.cuenta_caja_ahorro}</option>)}
-                                    {displayCorriente && (<option value="corriente">{clienteBuscado.cuenta_cuenta_corriente}</option>)}
+                                    <option value={clienteBuscado.cuentas.c1.numero_cuenta}>{clienteBuscado.cuentas.c1.numero_cuenta}</option>
+                                    {displayCajaahorro && (<option value={clienteBuscado.cuentas.c2.numero_cuenta}>{clienteBuscado.cuentas.c2.numero_cuenta}</option>)}
                                 </select>
                             </form>
                                 {displayAccount && (
