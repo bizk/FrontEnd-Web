@@ -11,6 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 function ResumenCuenta (props){
+    console.log(props.location.state)
     const [cliente, setCliente]=useState(props.location.state);
     const conceptos={
             alias:"DEPOSITO",
@@ -88,8 +89,8 @@ function ResumenCuenta (props){
                 <h5>Datos de la cuenta: </h5>
                 <h7>Nombre: </h7>{cliente.nombre}<br />
                 <h7>Apellido: </h7> {cliente.apellido} <br />
-                <h7>Cuenta:</h7><br /><h7>Caja de ahorro:</h7>{cliente.cuentas.cajaahorro}<br />
-                <h7>Saldo: $ </h7><h7 >{saldo} </h7>
+                <h7>Cuenta:</h7>{cliente.select.numero_cuenta}<br />
+                <h7>Saldo: $ </h7><h7 >{cliente.select.saldo} </h7>
             </div>
             </div>
             </Card>

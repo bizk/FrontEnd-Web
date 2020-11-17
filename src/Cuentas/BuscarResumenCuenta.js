@@ -24,8 +24,63 @@ function BuscarCrearCuenta (props){
         }
     }
     const changeAccount = (newAccount) => {
-        console.log(clienteBuscado.cuentas)
+        if(clienteBuscado.cuentas.c1.numero_cuenta===newAccount){
+            setclienteBuscado({
+                id:clienteBuscado.id,
+                nombre: clienteBuscado.nombre,
+                apellido: clienteBuscado.apellido,
+                dni: clienteBuscado.dni,
+                cuit: clienteBuscado.cuit,
+                email: clienteBuscado.email,
+                domicilio_ciudad: clienteBuscado.domicilio_ciudad,
+                domicilio_calle: clienteBuscado.domicilio_calle,
+                domicilio_numero: clienteBuscado.domicilio_numero,
+                domicilio_barrio: clienteBuscado.domicilio_barrio,
+                domicilio_piso: clienteBuscado.domicilio_piso,
+                domicilio_apartamento: clienteBuscado.domicilio_apartamento,
+                fecha_nacimiento: clienteBuscado.fecha_nacimiento,
+                pregunta1: clienteBuscado.pregunta1,
+                pregunta1_respuesta: clienteBuscado.pregunta1_respuesta,
+                pregunta2: clienteBuscado.pregunta2,
+                pregunta2_respuesta: clienteBuscado.pregunta2_respuesta,
+                pregunta3: clienteBuscado.pregunta3,
+                pregunta3_respuesta: clienteBuscado.pregunta3_respuesta,
+                cuentas:{
+                    c1:clienteBuscado.cuentas.c1,
+                    c2:clienteBuscado.cuentas.c2,
+                },
+                select: clienteBuscado.cuentas.c1,
+                });
+        }else{
+        setclienteBuscado({
+            id:clienteBuscado.id,
+                nombre: clienteBuscado.nombre,
+                apellido: clienteBuscado.apellido,
+                dni: clienteBuscado.dni,
+                cuit: clienteBuscado.cuit,
+                email: clienteBuscado.email,
+                domicilio_ciudad: clienteBuscado.domicilio_ciudad,
+                domicilio_calle: clienteBuscado.domicilio_calle,
+                domicilio_numero: clienteBuscado.domicilio_numero,
+                domicilio_barrio: clienteBuscado.domicilio_barrio,
+                domicilio_piso: clienteBuscado.domicilio_piso,
+                domicilio_apartamento: clienteBuscado.domicilio_apartamento,
+                fecha_nacimiento: clienteBuscado.fecha_nacimiento,
+                pregunta1: clienteBuscado.pregunta1,
+                pregunta1_respuesta: clienteBuscado.pregunta1_respuesta,
+                pregunta2: clienteBuscado.pregunta2,
+                pregunta2_respuesta: clienteBuscado.pregunta2_respuesta,
+                pregunta3: clienteBuscado.pregunta3,
+                pregunta3_respuesta: clienteBuscado.pregunta3_respuesta,
+                cuentas:{
+                    c1:clienteBuscado.cuentas.c1,
+                    c2:clienteBuscado.cuentas.c2,
+                },
+                select: clienteBuscado.cuentas.c2,
+            });
+        }
         setSelectedAccount(newAccount)
+
     }
     const useStyles=makeStyles((theme) => ({
         container: {
