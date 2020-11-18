@@ -151,6 +151,7 @@ function BuscarResumenCuenta (props){
             }
             });
         }else{
+            setDisplayCajaahorro(true);
             setclienteBuscado({
                 id:response.data.cliente.id,
                 nombre: response.data.cliente.nombre,

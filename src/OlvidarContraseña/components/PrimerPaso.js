@@ -2,6 +2,7 @@ import React, {useState}  from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { Button} from 'react-bootstrap';
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -10,6 +11,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Background from "./Password.jpg";
 import Logo from "../../LogIn/Assets/Logo.png";
 import history from '../../history';
+import Modal from 'react-bootstrap/Modal';
+import { Alert } from '@material-ui/lab';
+import axios from 'axios';
+
 
 function Copyright() {
   return (
@@ -69,14 +74,43 @@ const useStyles = makeStyles((theme) => ({
    }
   }));
 const Number = /^[0-9]+$/;
-const Cancel=()=>{
-    history.push({
-        pathname: '/',
-      })
-}
 export default function PrimerPaso() {
+  const handleClose = () =>{
+    setShow(false);
+    console.log(dni);
+    history.push({
+        pathname: '/RecuperarContraseña',
+        state:dni,
+    })
+  }
+  const [dni, setDni]=useState();
+  const handleEnviar = (dni) => {
+    setDni(dni);
+    axios.post('https://integracion-banco.herokuapp.com/olvide_mi_clave',{
+          "dni": dni,
+      },{
+          headers: {
+              Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+        }
+      })
+      .then(function (response) {
+          setDisplay(false);
+          setShow(true);
+        })
+        .catch(function (error) {
+          setDisplay(true);
+          console.log(error);
+  
+        });
+      }
+  const Cancel=()=>{
+      history.push({
+          pathname: '/',
+        })
+  }
     const classes = useStyles();
-    const [dni, setDni]=useState();
+    const [show, setShow] = useState(false);
+    const [display, setDisplay]=useState(false);
     return (
         <Grid container component="main" className={classes.root}>
         <CssBaseline />
@@ -101,13 +135,7 @@ export default function PrimerPaso() {
                     .max(8, 'El DNI ingresado no es correcto'),
                   })}
                   onSubmit={fields => {
-                    const dni={
-                      dni:45553354
-                  }
-                  setDni(dni);
-                  history.push({
-                    pathname: '/RecuperarContraseña',
-                  })
+                   handleEnviar(fields.dni)
                 }}
                   render={({ errors, status, touched, handleChange}) => (
                       <Form>
@@ -117,6 +145,8 @@ export default function PrimerPaso() {
                               <ErrorMessage name="dni" component="div" className="invalid-feedback" />
                           </div>
                         </div>
+                        {display && (
+                                    <Alert severity="error">Ha ocurrido un error.</Alert>)}
                           <div className="form-group">
                               <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary" >ENVIAR TOKEN</button>
                               <button style={{backgroundColor:"#BF6D3A"}} onClick={Cancel} className="btn btn-primary ml-3" >CANCELAR</button>
@@ -129,6 +159,19 @@ export default function PrimerPaso() {
               </Box>
           </div>
         </Grid>
+        <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Recuperar contraseña</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">Se ha enviado un email con un token de seguridad para recuperar su contraseña.</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
       </Grid>
     );
   }
