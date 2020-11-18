@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navigation from './components/Navbar';
 import { Card} from 'react-bootstrap';
@@ -9,9 +9,6 @@ import * as Yup from 'yup';
 const BASE_URL = 'https://integracion-banco.herokuapp.com/';
 
 function Cobranza () {
-
-	const [displayAhorro,setDisplayAhorro] = useState(false)
-	const [displayCorriente,setDisplayCorriente]=useState(false)
 	const [display, setDisplay] = useState(false)
 	const [display1,setDisplay1] = useState(false)
 	const [displayCargar, setDisplayCargar]=useState(false)	
@@ -32,40 +29,22 @@ function Cobranza () {
 },[cuenta]);
 
 	const change = () =>{
-		/* if (this.state.cliente.cuentas.cajaahorro ===""){
-			this.setState({
-				displayAhorro:false
-			});
-		}else{
-			this.setState({
-				displayAhorro:true
-			});
-		}
-		if(this.state.cliente.cuentas.cuentacorriente ===""){
-			this.setState({
-				displayCorriente:false
-			});
-		}else{
-			this.setState({
-				displayCorriente:true
-			});
-		} */
+
 	}
 	const [index,setIndex]=useState('')
 	const changeHandler = event =>{
-    	var uploadFile = event.target.files[0];    
+		var uploadFile = event.target.files[0];    
         setSelectedFile(uploadFile);
 	}
 	const fileUpload = () => {
-	console.log(selectedFile)
-	axios.post(urlfacturas, 
+	const form = new FormData();
+	form.append('archivo', new Blob([selectedFile], { type: 'text/csv' }));
+	form.append('numero_cuenta', cuenta[index].numero_cuenta)
+	axios.post(urlfacturas, form,
 		{
-			"archivo": selectedFile,
-			"numero_cuenta": cuenta[index].numero_cuenta
-		},{
-		headers: {
-			Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')), //the token is a variable which holds the token
-			'Access-control-Allow-Origin': true
+			headers: {
+				Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')), //the token is a variable which holds the token
+				'Access-control-Allow-Origin': true,
 		},
 	})
 	  .then(res => {
@@ -75,8 +54,8 @@ function Cobranza () {
 	  .catch(err => {
 		console.log("no se cargaron las facturas")
 		setDisplay(true)
-	  });
-
+	  }); 
+	
 	};
 	
 	  return (
