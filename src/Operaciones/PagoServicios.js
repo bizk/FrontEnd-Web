@@ -6,7 +6,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import Modal from 'react-bootstrap/Modal';
 function PagoServicios (props){
-    const [cliente, setCliente]=useState(props.location.state);
+    const cliente = useState(props.location.cliente);
+    const facturas = useState(props.location.facturasObtenidas)
+    const saldoCliente = useState(props.location.saldoCliente)
+    const numeroCuenta = useState(props.location.numeroCuentaSeleccionada)
+    const codigoPago = useState(props.location.codigoPago)
     const[pagar,setPagar]=useState(0);
     const [show, setShow] = useState(false);
         const handleClose = () =>{
@@ -36,10 +40,10 @@ function PagoServicios (props){
             }
         }
         console.log(miArray.length)
-        if(sum>parseInt(saldo)){
+        if(sum>parseInt(saldoCliente)){
             setDisplay(true)
         }else{
-            setSaldo(parseInt(saldo)-sum)
+            //setSaldo(parseInt(saldo)-sum)
             setDisplay(false)
             for (let i = 0; i < miArray.length; ++i) {
                 facturaState[i].estado="Pagada"
@@ -47,29 +51,10 @@ function PagoServicios (props){
             setShow(true)
     }
 }
-    const [saldo, setSaldo]=useState(9800);
+
     const [display, setDisplay]=useState(false);
     const [displayFac, setDisplayFac]=useState(false);
 
-  useEffect(() => {
-    let facturaState = [
-        { id: 1, factura_id:"42222", estado: "Vigente", fechav: "01-01-2021", cantidad: 4800 },
-      { id: 2, factura_id: "56666", estado: "Vigente", fechav: "25-11-2020", cantidad: 5000 },
-      { id: 3,factura_id: "30000", estado: "Vigente", fechav: "20-11-2020", cantidad: 4500  }
-    ];
-    setFacturaState(
-      facturaState.map(d => {
-        return {
-          select: false,
-          id: d.id,
-          factura_id: d.factura_id,
-          estado: d.estado,
-          fechav: d.fechav,
-          cantidad: d.cantidad,
-        };
-      })
-    );
-  }, []);
     const useStyles = makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -106,9 +91,9 @@ function PagoServicios (props){
                 <Card className="col-sm-6 col-md-4 offset-md-4 col-lg-4 offset-lg-4 ml-6">
                     <div className={classes.modify1}>
                     <div className={classes.title1}>
-                        <h4>Cuenta: </h4><h5>{cliente.cuentas.cajaahorro}</h5>
-                        <h4>Su Saldo: </h4><h5>$ {saldo}</h5>
-                        <h4>Código de pago electrónico: </h4><h5>{cliente.codigo}</h5>
+                        <h4>Cuenta: </h4><h5>{numeroCuenta}</h5>
+                        <h4>Su Saldo: </h4><h5>$ {saldoCliente}{/* numeroCuenta == cliente.cuentas.c1.numero_cuenta ? cliente.cuentas.c1.saldo : cliente.cuentas.c2.saldo*/} </h5>
+                        <h4>Código de pago electrónico: </h4><h5>{codigoPago}</h5>
                     </div>
                     </div>
                     {display && (
@@ -177,7 +162,7 @@ function PagoServicios (props){
             </Modal.Header>
             <Modal.Body>
                 <Alert severity="success">El pago ha sido realizado exitosamente</Alert>
-                <Alert severity="warning">Su nuevo saldo es de $ {saldo}</Alert>
+                <Alert severity="warning">Su nuevo saldo es de $ {saldoCliente}</Alert>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
