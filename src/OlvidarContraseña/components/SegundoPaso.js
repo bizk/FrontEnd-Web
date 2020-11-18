@@ -1,9 +1,9 @@
 import React, {useState}  from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Link from "@material-ui/core/Link";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Paper from "@material-ui/core/Paper";
+import { Button} from 'react-bootstrap';
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -11,6 +11,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Background from "./Password.jpg";
 import Logo from "../../LogIn/Assets/Logo.png";
 import history from '../../history';
+import Modal from 'react-bootstrap/Modal';
+import { Alert } from '@material-ui/lab';
+import axios from 'axios';
 
 function Copyright() {
   return (
@@ -75,9 +78,38 @@ const Cancel=()=>{
         pathname: '/',
       })
 }
-
-export default function SegundoPaso() {
+export default function SegundoPaso(props) {
     const classes = useStyles();
+    const [dni, setDni]=useState(props.location.state);
+    const [show, setShow] = useState(false);
+    const handleClose = () =>{
+      setShow(false);
+      history.push({
+          pathname: '/Home',
+      })
+    }
+    const [display, setDisplay]=useState(false);
+    const handleRecuperar = (token,usuario,contraseña) => {
+      console.log(dni)
+      console.log(contraseña)
+      console.log(usuario)
+      console.log(token)
+      axios.post('https://integracion-banco.herokuapp.com/recuperar',{
+            "dni": dni,
+            "nombre_usuario":usuario,
+            "clave":contraseña,
+            "codigo":token
+        })
+        .then(function (response) {
+            setDisplay(false);
+            setShow(true);
+          })
+          .catch(function (error) {
+            setDisplay(true);
+            console.log(error);
+    
+          });
+        }
     const [token, setToken]=useState();
     return (
         <Grid container component="main" className={classes.root}>
@@ -94,30 +126,15 @@ export default function SegundoPaso() {
             <Formik
                   initialValues={{
                       token: '',
-                      pregunta1:'',
-                      respuesta1:'',
-                      pregunta2:'',
-                      respuesta2:'',
-                      pregunta3:'',
-                      respuesta3:'',
+                      usuario:'',
                       contraseña: '',
                       confirmcontraseña:'',          
                   }}
                   validationSchema={Yup.object().shape({
                     token: Yup.string()
                           .required('El campo es obligatorio (*)'),
-                    pregunta1: Yup.string()
+                    usuario: Yup.string()
                           .required('El campo es obligatorio (*)'),
-                    respuesta1: Yup.string()
-                      .required('El campo es obligatorio (*)'),
-                    pregunta2: Yup.string()
-                          .required('El campo es obligatorio (*)'),
-                    respuesta2: Yup.string()
-                      .required('El campo es obligatorio (*)'),
-                    pregunta3: Yup.string()
-                          .required('El campo es obligatorio (*)'),
-                    respuesta3: Yup.string()
-                      .required('El campo es obligatorio (*)'),
                     contraseña: Yup.string()
                           .matches(/\w*[a-z]\w*/,  "La contraseña debe tener al menos 1 minúscula")
                           .matches(/\w*[A-Z]\w*/,  "La contraseña debe tener al menos 1 mayúscula")
@@ -130,21 +147,7 @@ export default function SegundoPaso() {
                           .required('La confirmación de contraseña es obligatoria'),
                   })}
                   onSubmit={fields => {
-                    const token={
-                      token:(fields.token),
-                      pregunta1:(fields.pregunta1),
-                      respuesta1:(fields.respuesta1),
-                      pregunta2:(fields.pregunta2),
-                      respuesta2:(fields.respuesta2),
-                      pregunta3:(fields.pregunta3),
-                      respuesta3:(fields.respuesta3),
-                      contraseña:(fields.contraseña),
-                      confirmcontraseña:(fields.confirmcontraseña)
-                  }
-                  setToken(token);
-                  history.push({
-                    pathname: '/',
-                  })
+                    handleRecuperar(fields.token, fields.usuario, fields.contraseña)
                 }}
                   render={({ errors, status, touched, handleChange}) => (
                       <Form>
@@ -154,28 +157,8 @@ export default function SegundoPaso() {
                               <ErrorMessage name="token" component="div" className="invalid-feedback" />
                           </div>
                           <div className="form-group">
-                        <Field name="pregunta1" type="text" placeholder="Pregunta de seguridad (1)" className={'form-control' + (errors.pregunta1 && touched.pregunta1? ' is-invalid' : '')} />
-                        <ErrorMessage name="pregunta1" component="div" className="invalid-feedback" />
-                    </div>
-                    <div className="form-group">
-                        <Field name="respuesta1" type="text" placeholder="Respuesta (1)" className={'form-control' + (errors.respuesta1 && touched.respuesta1? ' is-invalid' : '')} />
-                        <ErrorMessage name="respuesta1" component="div" className="invalid-feedback" />
-                    </div>
-                    <div className="form-group">
-                        <Field name="pregunta2" type="text" placeholder="Pregunta de seguridad (2)"className={'form-control' + (errors.pregunta2 && touched.pregunta2? ' is-invalid' : '')} />
-                        <ErrorMessage name="pregunta2" component="div" className="invalid-feedback" />
-                    </div>
-                    <div className="form-group">
-                        <Field name="respuesta2" type="text" placeholder="Respuesta (2)"className={'form-control' + (errors.respuesta2 && touched.respuesta2? ' is-invalid' : '')} />
-                        <ErrorMessage name="respuesta2" component="div" className="invalid-feedback" />
-                    </div>
-                    <div className="form-group">
-                        <Field name="pregunta3" type="text" placeholder="Pregunta de seguridad (3)" className={'form-control' + (errors.pregunta3 && touched.pregunta3? ' is-invalid' : '')} />
-                        <ErrorMessage name="pregunta3" component="div" className="invalid-feedback" />
-                    </div>
-                    <div className="form-group">
-                        <Field name="respuesta3" type="text" placeholder="Respuesta (3)" className={'form-control' + (errors.respuesta3 && touched.respuesta3? ' is-invalid' : '')} />
-                        <ErrorMessage name="respuesta3" component="div" className="invalid-feedback" />
+                        <Field name="usuario" type="text" placeholder="Nombre de usuario" className={'form-control' + (errors.usuario && touched.usuario? ' is-invalid' : '')} />
+                        <ErrorMessage name="usuario" component="div" className="invalid-feedback" />
                     </div>
                     <div className="form-group">
                         <Field name="contraseña" type="password" placeholder="Nueva contraseña" className={'form-control' + (errors.contraseña&& touched.contraseña? ' is-invalid' : '')} />
@@ -186,6 +169,8 @@ export default function SegundoPaso() {
                         <ErrorMessage name="confirmcontraseña" component="div" className="invalid-feedback" />
                     </div>
                         </div>
+                        {display && (
+                                    <Alert severity="error">Ha ocurrido un error.</Alert>)}
                           <div className="form-group">
                               <button style={{backgroundColor:"#BF6D3A"}} type="submit" className="btn btn-primary">CAMBIAR CONTRASEÑA</button>
                               <button style={{backgroundColor:"#BF6D3A"}} onClick={Cancel} className="btn btn-primary ml-3" >CANCELAR</button>
@@ -199,6 +184,19 @@ export default function SegundoPaso() {
               </Box>
           </div>
         </Grid>
+        <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Recuperar contraseña</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">Se ha reestablecido correctamente la contraseña.</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
       </Grid>
     );
   }
