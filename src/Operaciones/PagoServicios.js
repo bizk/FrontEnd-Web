@@ -39,9 +39,56 @@ function PagoServicios (props){
       };
     const [display, setDisplay]=useState(false);
     const [displayFac, setDisplayFac]=useState(false);
-    const click = (numero,fecha,importe) =>{
-        console.log("factura: "+numero+" fecha: "+fecha+" importe: "+importe)
+    const [facturaSelectEstado] = useState([]);
+    const [facturasIdPagar] = useState([]);
+    const [displayFacturaPagadaExitosamente,setDisplayFacturaPagadaExitosamente] = useState(false);
+    const [displayFacturaNOPagadaExitosamente,setDisplayFacturaNOPagadaExitosamente] = useState(false)
+    var facturasImporte = 0;
+    var importeFacturaParse = 0;
+    const click = (numero,fecha,importe, index) =>{
+        console.log("factura select estado: " + facturaSelectEstado[index])
+        if (facturaSelectEstado[index] === false){
+            facturaSelectEstado[index] = true
+            facturasIdPagar.push(numero);
+            importeFacturaParse = parseFloat(importe)
+            facturasImporte += importeFacturaParse
+        } else if (facturaSelectEstado[index] === true){
+            facturaSelectEstado[index] = false
+            for( var i = 0; i < facturasIdPagar.length; i++){ 
+                if (facturasIdPagar[i] === numero) {
+                    facturasIdPagar.splice(i, 1); 
+                }
+             }
+            importeFacturaParse = parseFloat(importe)
+            facturasImporte -= importeFacturaParse
+        }else if (facturaSelectEstado[index] === undefined){
+            facturaSelectEstado[index] = true
+            facturasIdPagar.push(numero);
+            importeFacturaParse = parseFloat(importe)
+            facturasImporte += importeFacturaParse
+        }
+        console.log("estado checkbox: " + facturaSelectEstado, "ids: " + facturasIdPagar,"importe: " + facturasImporte);
     }
+
+    const pagarServicio = () => {
+        const data={"dni": cliente.dni,"facturas_ids": facturasIdPagar, "numero_cuenta": cliente.select.numero_cuenta, "cantidad": facturasImporte}
+        axios.post(`https://integracion-banco.herokuapp.com/transacciones/banco/pagar_servicio`,
+        data,
+        {
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+            }
+        })
+        .then(function (response) {
+            console.log(response) 
+            setDisplayFacturaPagadaExitosamente(true)
+        })
+        .catch(function (error) {
+            setDisplayFacturaNOPagadaExitosamente(true);
+            console.log(error.message);
+        });
+    }
+
     useEffect(() => {
         getFacturas();
       }, []);
@@ -56,10 +103,11 @@ function PagoServicios (props){
             let temp=[];
             for (let i = 0; i < response.data.facturas.length; ++i) {
                 var tempi=[]
-                tempi.push(response.data.facturas[i].numero_factura, response.data.facturas[i].fecha_vencimiento, response.data.facturas[i].importe, response.data.facturas[i].numero_factura);
+                tempi.push(response.data.facturas[i].numero_factura, response.data.facturas[i].fecha_vencimiento, response.data.facturas[i].importe, response.data.facturas[i].fecha_pagado);
                 temp.push(tempi);
             }
         setPagar(temp)
+        console.log(pagar)
         })
         .catch(function (error) {
             console.log(error);
@@ -103,7 +151,7 @@ function PagoServicios (props){
                     <div className={classes.modify1}>
                     <div className={classes.title1}>
                         <h4>Cuenta: </h4><h5>{cliente.select.numero_cuenta}</h5>
-                        <h4>Su Saldo: </h4><h5>$ {cliente.select.saldo}</h5>
+                        <h4>Su Saldo: </h4><h5>$ {parseFloat(cliente.select.saldo)}</h5>
                         <h4>Código de pago electrónico: </h4><h5>{codigoPago}</h5>
                     </div>
                     </div>
@@ -112,7 +160,7 @@ function PagoServicios (props){
                     {displayFac && (
                         <Alert severity="error">Una de las facturas seleccionadas ya se encuentra pagada</Alert>
                     )}
-                    <Button /*onClick={onClick}*/ style ={{backgroundColor:"#BF6D3A", color:"white", marginTop:"15px"}}>Realizar pago</Button>
+                    <Button onClick={() => pagarServicio()} style ={{backgroundColor:"#BF6D3A", color:"white", marginTop:"15px"}}>Realizar pago</Button>
                 </Card>
                 <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
@@ -120,17 +168,25 @@ function PagoServicios (props){
                 <TableRow>
                     <TableCell align="left">Seleccione la/s factura/s a pagar</TableCell>
                     <TableCell align="left">Número de factura</TableCell>
-                    <TableCell align="left">Fecha de vencimiento</TableCell>
+                    <TableCell align="left">Fecha de vencimiento / Pago</TableCell>
                     <TableCell align="right">Importe</TableCell>
                 </TableRow>
                 </TableHead>
                 <TableBody>
-                {pagar.map((row) => (
-                    <TableRow  onClick={() => click(row[0], row[1], row[2])} key={row[0]}>
+                {pagar.map((row,i) => (
+                    row[3] === null ? 
+                    <TableRow  onClick={() => click(row[0], row[1], row[2], i)} key={row[0]}>
                     <TableCell align="left"><Checkbox /></TableCell>
                     <TableCell align="left">{row[0]}</TableCell>
                     <TableCell align="left">{moment(row[1]).format("DD-MM-YYYY")}</TableCell>
-                    <TableCell align="right">${row[2]}</TableCell>
+                    <TableCell align="right">${parseFloat(row[2])}</TableCell>
+                    </TableRow>
+                    : 
+                    <TableRow  onClick={() => click(row[0], row[1], row[2], i)} key={row[0]}>
+                    <TableCell align="left"><Checkbox disabled /></TableCell>
+                    <TableCell align="left">{row[0]}</TableCell>
+                    <TableCell align="left"> Factura pagada el: {moment(row[3]).format("DD-MM-YYYY")}</TableCell>
+                    <TableCell align="right">${parseFloat(row[2])}</TableCell>
                     </TableRow>
                 ))}
                 </TableBody>
@@ -138,6 +194,7 @@ function PagoServicios (props){
             </TableContainer>
                 </div>
             </div>
+            {displayFacturaPagadaExitosamente && (
             <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
             <Modal.Header closeButton>
             <Modal.Title>Pago realizado</Modal.Title>
@@ -151,6 +208,22 @@ function PagoServicios (props){
             </Button>
             </Modal.Footer>
             </Modal>
+            )}
+            {displayFacturaNOPagadaExitosamente && (
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal.Header closeButton>
+            <Modal.Title>Pago NO realizado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="success">El pago no se ha podido realizar</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
+            )}
             </div>
         );
     }
