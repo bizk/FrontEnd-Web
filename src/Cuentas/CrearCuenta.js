@@ -59,9 +59,14 @@ function CrearCuenta (props){
     }
     const handleCrearCuenta = (fondo, tipo) => {
         console.log(cliente.id)
+        if(tipo==="CAJA_DE_AHORRO"){
+            fondo=0
+        }
+        console.log(fondo)
         axios.post('https://integracion-banco.herokuapp.com/cuentas', {
           "tipo": tipo,
           "cliente_id": (cliente.id),
+          "fondo_descubierto": fondo
         },{
             headers: {
                 Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
@@ -138,7 +143,7 @@ function CrearCuenta (props){
                     .matches(Number,'Ingrese únicamente números')
             })}
             onSubmit={fields => {
-                handleCrearCuenta(fields.fondo, fields.tipoCuenta)
+                handleCrearCuenta(fields.fondo, fields.tipoCuenta,)
             }}
             render={({ errors, status, touched }) => (
                 <Card className="col-sm-12 col-md-12 offset-md-2 col-lg-12 offset-lg-2">

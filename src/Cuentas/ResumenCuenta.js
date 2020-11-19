@@ -11,6 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import axios from 'axios';
+import moment from 'moment';
 
 function ResumenCuenta (props){
     const [cliente, setCliente]=useState(props.location.state);
@@ -120,7 +121,7 @@ function ResumenCuenta (props){
                 <TableBody>
                 {movimientos.map((row) => (
                     <TableRow key={row.fecha}>
-                    <TableCell align="left">{row[0]}</TableCell>
+                    <TableCell align="left">{moment(row[0]).format("DD-MM-YYYY")}</TableCell>
                     <TableCell align="left">{row[1]}</TableCell>
                     <TableCell align="right">{row[2]}</TableCell>
                     </TableRow>
