@@ -139,7 +139,7 @@ function Home (props){
     </div>
     <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
     <CardActionArea   onClick={() => history.push({
-                  pathname: '/BuscarPagoServicios',
+                  pathname: '/MenuPagoServicios',
                   state:user })}>
       <div class="card">
       <div className={classes.card}>

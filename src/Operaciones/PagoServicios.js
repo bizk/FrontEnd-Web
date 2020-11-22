@@ -23,11 +23,15 @@ function PagoServicios (props){
     console.log(codigoPago);
     const[pagar,setPagar]=useState([]);
     const [show, setShow] = useState(false);
+    const [showno, setShowno] = useState(false);
         const handleClose = () =>{
             setShow(false);
             history.push({
                 pathname: '/BuscarPagoServicios',
                 state:JSON.parse(localStorage.getItem('user')) })
+        }
+        const handleClosed = () =>{
+            setShow(false);
         }
         const handleShow = () => setShow(true);
     const [facturaState, setFacturaState] = useState([]);
@@ -41,11 +45,9 @@ function PagoServicios (props){
     const [displayFac, setDisplayFac]=useState(false);
     const [facturaSelectEstado] = useState([]);
     const [facturasIdPagar] = useState([]);
-    const [displayFacturaPagadaExitosamente,setDisplayFacturaPagadaExitosamente] = useState(false);
-    const [displayFacturaNOPagadaExitosamente,setDisplayFacturaNOPagadaExitosamente] = useState(false)
     var facturasImporte = 0;
     var importeFacturaParse = 0;
-    const click = (numero,fecha,importe, index) =>{
+    const click = (numero,fact,fecha,importe, index) =>{
         console.log("factura select estado: " + facturaSelectEstado[index])
         if (facturaSelectEstado[index] === false){
             facturaSelectEstado[index] = true
@@ -71,7 +73,8 @@ function PagoServicios (props){
     }
 
     const pagarServicio = () => {
-        const data={"dni": cliente.dni,"facturas_ids": facturasIdPagar, "numero_cuenta": cliente.select.numero_cuenta, "cantidad": facturasImporte}
+        console.log(facturasIdPagar)
+        const data={"dni":cliente.dni,"facturas_ids": facturasIdPagar, "numero_cuenta": cliente.select.numero_cuenta, "cantidad": facturasImporte}
         axios.post(`https://integracion-banco.herokuapp.com/transacciones/banco/pagar_servicio`,
         data,
         {
@@ -81,10 +84,12 @@ function PagoServicios (props){
         })
         .then(function (response) {
             console.log(response) 
-            setDisplayFacturaPagadaExitosamente(true)
+            setShow(true)
+            setShowno(false)
         })
         .catch(function (error) {
-            setDisplayFacturaNOPagadaExitosamente(true);
+            setShowno(true)
+            setShow(false)
             console.log(error.message);
         });
     }
@@ -103,7 +108,7 @@ function PagoServicios (props){
             let temp=[];
             for (let i = 0; i < response.data.facturas.length; ++i) {
                 var tempi=[]
-                tempi.push(response.data.facturas[i].numero_factura, response.data.facturas[i].fecha_vencimiento, response.data.facturas[i].importe, response.data.facturas[i].fecha_pagado);
+                tempi.push(response.data.facturas[i].id,response.data.facturas[i].numero_factura, response.data.facturas[i].fecha_vencimiento, response.data.facturas[i].importe, response.data.facturas[i].fecha_pagado);
                 temp.push(tempi);
             }
         setPagar(temp)
@@ -174,19 +179,19 @@ function PagoServicios (props){
                 </TableHead>
                 <TableBody>
                 {pagar.map((row,i) => (
-                    row[3] === null ? 
-                    <TableRow  onClick={() => click(row[0], row[1], row[2], i)} key={row[0]}>
+                    row[4] === null ? 
+                    <TableRow  onClick={() => click(row[0], row[1], row[2],row[3], i)} key={row[0]}>
                     <TableCell align="left"><Checkbox /></TableCell>
-                    <TableCell align="left">{row[0]}</TableCell>
-                    <TableCell align="left">{moment(row[1]).format("DD-MM-YYYY")}</TableCell>
-                    <TableCell align="right">${parseFloat(row[2])}</TableCell>
+                    <TableCell align="left">{row[1]}</TableCell>
+                    <TableCell align="left">{moment(row[2]).format("DD-MM-YYYY")}</TableCell>
+                    <TableCell align="right">${parseFloat(row[3])}</TableCell>
                     </TableRow>
                     : 
-                    <TableRow  onClick={() => click(row[0], row[1], row[2], i)} key={row[0]}>
+                    <TableRow  onClick={() => click(row[0], row[1], row[2],row[3], i)} key={row[0]}>
                     <TableCell align="left"><Checkbox disabled /></TableCell>
-                    <TableCell align="left">{row[0]}</TableCell>
-                    <TableCell align="left"> Factura pagada el: {moment(row[3]).format("DD-MM-YYYY")}</TableCell>
-                    <TableCell align="right">${parseFloat(row[2])}</TableCell>
+                    <TableCell align="left">{row[1]}</TableCell>
+                    <TableCell align="left"> Factura pagada el: {moment(row[4]).format("DD-MM-YYYY")}</TableCell>
+                    <TableCell align="right">${parseFloat(row[3])}</TableCell>
                     </TableRow>
                 ))}
                 </TableBody>
@@ -194,7 +199,6 @@ function PagoServicios (props){
             </TableContainer>
                 </div>
             </div>
-            {displayFacturaPagadaExitosamente && (
             <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
             <Modal.Header closeButton>
             <Modal.Title>Pago realizado</Modal.Title>
@@ -208,14 +212,12 @@ function PagoServicios (props){
             </Button>
             </Modal.Footer>
             </Modal>
-            )}
-            {displayFacturaNOPagadaExitosamente && (
-            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={showno} onHide={handleClosed} >
             <Modal.Header closeButton>
             <Modal.Title>Pago NO realizado</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Alert severity="success">El pago no se ha podido realizar</Alert>
+                <Alert severity="warning">El pago no se ha podido realizar</Alert>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
@@ -223,7 +225,6 @@ function PagoServicios (props){
             </Button>
             </Modal.Footer>
             </Modal>
-            )}
             </div>
         );
     }

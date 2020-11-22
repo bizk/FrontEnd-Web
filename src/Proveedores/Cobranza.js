@@ -68,7 +68,7 @@ function Cobranza () {
         	textAlign:"left",
         	marginTop:"5px"}}>
                 <h5>Instrucciones sobre la carga de archivo: </h5>
-                <h6>El archivo que deberá cargar debe ser de formato .csv, el cual debe contener la siguiente información:<br />
+                <h6>El archivo que deberá cargar debe ser de formato .txt, el cual debe contener la siguiente información:<br />
 				*código de pago electrónico<br />
 				*número de factura<br />
 				*importe<br />
