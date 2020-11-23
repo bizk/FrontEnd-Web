@@ -12,20 +12,89 @@ import axios from 'axios';
 function BuscarPagoServicios(props){
     const [cliente, setCliente]=useState();
     const [user, setUser]=useState(props.location.state);  
-    const [clientee,setClientee]=useState("");
+    const [client,setClient]=useState(false);
     const [currentAccount, setCurrentAccount] = useState();
     const [selectAccount, setSelectedAccount] = useState("");
-    const onClick=()=>{
-        history.push({
-            pathname: '/PagoServicios',
-            cliente: clienteBuscado,
-            facturasObtenidas: facturas,
-            saldoCliente: saldo,
-            numeroCuentaSeleccionada: numeroCuenta,
-            codigoPago: codigoIngresado,
-        })
+    const [clienteBuscado,setclienteBuscado]=useState({});
+    const [facturas, setFacturas] = useState([])
+    const onClick = () =>{
+        if(selectAccount===""){
+            setDisplayAccount(true);
+        }else if(codigoPago===""){
+            setDisplayVerificar(true);
+        }else{
+            history.push({
+                pathname:"/PagoServicios",
+                state: clienteBuscado,
+                facturasObtenidas: facturas,
+                codigoPago: codigoPago,
+            })
+        }
     }
-   
+    const changeAccount = (newAccount) => {
+        console.log(newAccount)
+        if(newAccount!==""){
+            setDisplayAccount(false);
+        if(clienteBuscado.cuentas.c1.numero_cuenta===newAccount){
+            setclienteBuscado({
+                id:clienteBuscado.id,
+                nombre: clienteBuscado.nombre,
+                apellido: clienteBuscado.apellido,
+                dni: clienteBuscado.dni,
+                cuit: clienteBuscado.cuit,
+                email: clienteBuscado.email,
+                domicilio_ciudad: clienteBuscado.domicilio_ciudad,
+                domicilio_calle: clienteBuscado.domicilio_calle,
+                domicilio_numero: clienteBuscado.domicilio_numero,
+                domicilio_barrio: clienteBuscado.domicilio_barrio,
+                domicilio_piso: clienteBuscado.domicilio_piso,
+                domicilio_apartamento: clienteBuscado.domicilio_apartamento,
+                fecha_nacimiento: clienteBuscado.fecha_nacimiento,
+                pregunta1: clienteBuscado.pregunta1,
+                pregunta1_respuesta: clienteBuscado.pregunta1_respuesta,
+                pregunta2: clienteBuscado.pregunta2,
+                pregunta2_respuesta: clienteBuscado.pregunta2_respuesta,
+                pregunta3: clienteBuscado.pregunta3,
+                pregunta3_respuesta: clienteBuscado.pregunta3_respuesta,
+                cuentas:{
+                    c1:clienteBuscado.cuentas.c1,
+                    c2:clienteBuscado.cuentas.c2,
+                },
+                select: clienteBuscado.cuentas.c1,
+                });
+        }else{
+        setclienteBuscado({
+            id:clienteBuscado.id,
+                nombre: clienteBuscado.nombre,
+                apellido: clienteBuscado.apellido,
+                dni: clienteBuscado.dni,
+                cuit: clienteBuscado.cuit,
+                email: clienteBuscado.email,
+                domicilio_ciudad: clienteBuscado.domicilio_ciudad,
+                domicilio_calle: clienteBuscado.domicilio_calle,
+                domicilio_numero: clienteBuscado.domicilio_numero,
+                domicilio_barrio: clienteBuscado.domicilio_barrio,
+                domicilio_piso: clienteBuscado.domicilio_piso,
+                domicilio_apartamento: clienteBuscado.domicilio_apartamento,
+                fecha_nacimiento: clienteBuscado.fecha_nacimiento,
+                pregunta1: clienteBuscado.pregunta1,
+                pregunta1_respuesta: clienteBuscado.pregunta1_respuesta,
+                pregunta2: clienteBuscado.pregunta2,
+                pregunta2_respuesta: clienteBuscado.pregunta2_respuesta,
+                pregunta3: clienteBuscado.pregunta3,
+                pregunta3_respuesta: clienteBuscado.pregunta3_respuesta,
+                cuentas:{
+                    c1:clienteBuscado.cuentas.c1,
+                    c2:clienteBuscado.cuentas.c2,
+                },
+                select: clienteBuscado.cuentas.c2,
+            });
+        }
+        setSelectedAccount(newAccount)
+    }else{
+        setDisplayAccount(true);
+    }
+    }
     const useStyles=makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -62,23 +131,41 @@ function BuscarPagoServicios(props){
     const [display, setDisplay]=useState(false);
     const[displayVerificar, setDisplayVerificar]=useState(false);
     const[displayAccount, setDisplayAccount]=useState(false);
-    const[displayCorriente,setDisplayCorriente]=useState(true);
-    const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
-    const [clienteBuscado,setClienteBuscado]=useState({})
-    const [cuenta,setCuentas] = useState([])
-    const [facturas, setFacturas] = useState([])
-    const [movimientos, setMovimientos] = useState([]);
-    const [saldo,setSaldo] = useState('')
-    const [numeroCuenta, setNumeroCuenta] = useState('')
-    const [codigoIngresado, setCodigoPago] = useState('')
-    const manageCliente = (response) =>{
-        console.log(response)
+    const[codigoPago,setCodigoPago]=useState("");
+    const manageClienteBuscado = (response) =>{
         if(response.data.cliente.cuentas[0]===undefined){
             setDisplay(true); 
         }else
+        console.log(response.data.cliente.cuentas[1])
         if(response.data.cliente.cuentas[1]===undefined){
             setDisplayCajaahorro(false);
-            setClienteBuscado({
+        setclienteBuscado({
+            id:response.data.cliente.id,
+            nombre: response.data.cliente.nombre,
+            apellido: response.data.cliente.apellido,
+            dni: response.data.cliente.dni,
+            cuit: response.data.cliente.cuit,
+            email: response.data.cliente.email,
+            domicilio_ciudad: response.data.cliente.domicilio_ciudad,
+            domicilio_calle: response.data.cliente.domicilio_calle,
+            domicilio_numero: response.data.cliente.domicilio_numero,
+            domicilio_barrio: response.data.cliente.domicilio_barrio,
+            domicilio_piso: response.data.cliente.domicilio_piso,
+            domicilio_apartamento: response.data.cliente.domicilio_apartamento,
+            fecha_nacimiento: response.data.cliente.fecha_nacimiento,
+            pregunta1: response.data.cliente.pregunta1,
+            pregunta1_respuesta: response.data.cliente.pregunta1_respuesta,
+            pregunta2: response.data.cliente.pregunta2,
+            pregunta2_respuesta: response.data.cliente.pregunta2_respuesta,
+            pregunta3: response.data.cliente.pregunta3,
+            pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
+            cuentas:{
+                c1:response.data.cliente.cuentas[0],
+            }
+            });
+        }else{
+            setDisplayCajaahorro(true);
+            setclienteBuscado({
                 id:response.data.cliente.id,
                 nombre: response.data.cliente.nombre,
                 apellido: response.data.cliente.apellido,
@@ -100,124 +187,49 @@ function BuscarPagoServicios(props){
                 pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
                 cuentas:{
                     c1:response.data.cliente.cuentas[0],
+                    c2:response.data.cliente.cuentas[1],
                 }
                 });
-            }else{
-                setClienteBuscado({
-                    id:response.data.cliente.id,
-                    nombre: response.data.cliente.nombre,
-                    apellido: response.data.cliente.apellido,
-                    dni: response.data.cliente.dni,
-                    cuit: response.data.cliente.cuit,
-                    email: response.data.cliente.email,
-                    domicilio_ciudad: response.data.cliente.domicilio_ciudad,
-                    domicilio_calle: response.data.cliente.domicilio_calle,
-                    domicilio_numero: response.data.cliente.domicilio_numero,
-                    domicilio_barrio: response.data.cliente.domicilio_barrio,
-                    domicilio_piso: response.data.cliente.domicilio_piso,
-                    domicilio_apartamento: response.data.cliente.domicilio_apartamento,
-                    fecha_nacimiento: response.data.cliente.fecha_nacimiento,
-                    pregunta1: response.data.cliente.pregunta1,
-                    pregunta1_respuesta: response.data.cliente.pregunta1_respuesta,
-                    pregunta2: response.data.cliente.pregunta2,
-                    pregunta2_respuesta: response.data.cliente.pregunta2_respuesta,
-                    pregunta3: response.data.cliente.pregunta3,
-                    pregunta3_respuesta: response.data.cliente.pregunta3_respuesta,
-                    cuentas:{
-                        c1:response.data.cliente.cuentas[0],
-                        c2:response.data.cliente.cuentas[1],
-                    }
-                    });
-                }   
-            setDisplay(false);
-            setCliente(true)    
+        }
+        console.log(clienteBuscado)
+            setDisplay(false);            
     };
-
-    const handleBuscarclienteBuscadoCuit= (cuit) => {
-        axios.get('https://integracion-banco.herokuapp.com/clientes/cuit?numero='+cuit+'',
-          {
-            headers: {
-                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
-          }
-        })
-        .then(function (response) {
-          //console.log(response)
-          getCuentas(response.data.cliente.id)
-          manageCliente(response);
-          setDisplay(false);
-        })
-        .catch(function (error) {
-          console.log(error);
-          setDisplay(true);
-          setCliente(false);
-        });
-      };
-      const handleBuscarclienteBuscadoCbu= (cbu) => {
+    const handleBuscarclienteBuscadoCbu= (cbu) => {
         axios.get('https://integracion-banco.herokuapp.com/clientes/cbu?numero='+cbu+'',{
             headers: {
                 Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
           }
         })
         .then(function (response) {
-            setDisplay(false);
-            getCuentas(response.data.cliente.id)
-            manageCliente(response);
+          //console.log(response)
+          manageClienteBuscado(response);
+          setClient(true);
         })
         .catch(function (error) {
           console.log(error);
           setDisplay(true);
+          setClient(false);
         });
       };
-    const handleBuscarCliente = (dni) => {
-        axios.get('https://integracion-banco.herokuapp.com/clientes/dni?numero='+dni+'',
-          {
+    const handleBuscarclienteBuscadoCuit= (cuit) => {
+        axios.get('https://integracion-banco.herokuapp.com/clientes/cuit?numero='+cuit+'',{
             headers: {
                 Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
           }
         })
         .then(function (response) {
           //console.log(response)
-          setDisplay(false);
-          getCuentas(response.data.cliente.id)
-          manageCliente(response);
+          manageClienteBuscado(response);
+          setClient(true);
         })
         .catch(function (error) {
           console.log(error);
           setDisplay(true);
+          setClient(false);
         });
       };
-
-      const getCuentas = (id) => {
-        axios.get('https://integracion-banco.herokuapp.com/cuentas?cliente_id='+id+'', {
-        headers: {
-            Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
-          }
-        }).then(function (response) {
-            setCuentas(response.data.cuentas)
-        })
-        .catch(function (error) {
-            console.log(error);
-     });
-    }
-
-    const handleResumen = (index) => {       
-          axios.get('https://integracion-banco.herokuapp.com/cuentas/'+(cuenta[index].numero_cuenta)+'/resumen', {
-              headers: {
-                  Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
-            }
-          })
-              .then(function (response) {
-                  setSaldo(response.data.cuenta.saldo)
-                  console.log(saldo)
-                  setNumeroCuenta(cuenta[index].numero_cuenta)      
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
-      }
-
-
-    const buscarFactura = (codigo) => {
+      const buscarFactura = (codigo) => {
+        setCodigoPago(codigo)
         axios.get('https://integracion-banco.herokuapp.com/facturas/'+codigo+'', {
         headers: {
             Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
@@ -225,7 +237,6 @@ function BuscarPagoServicios(props){
         }).then(function (response) {
             console.log(response.data.facturas)
             let temp=[];
-            setCodigoPago(codigo)
                 for (let i = 0; i < response.data.facturas.length; ++i) {
                     var tempi=[]
                     tempi.push(response.data.facturas[i].fecha_pagado, response.data.facturas[i].fecha_vencimiento, response.data.facturas[i].importe, response.data.facturas[i].numero_factura);
@@ -240,6 +251,23 @@ function BuscarPagoServicios(props){
             setDisplayVerificar(true)
      });
     }
+    const handleBuscarCliente = (dni) => {
+        axios.get('https://integracion-banco.herokuapp.com/clientes/dni?numero='+dni+'',{
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
+        })
+        .then(function (response) {
+          //console.log(response)
+          manageClienteBuscado(response);
+          setClient(true);
+        })
+        .catch(function (error) {
+          setClient(false);
+          setDisplay(true);
+        });
+      };
+    const[displayCajaahorro,setDisplayCajaahorro]=useState(true);
         return (
             <div className="Modificar">
                 <Navigation />
@@ -256,10 +284,9 @@ function BuscarPagoServicios(props){
                             Buscador: Yup.string()
                                 .matches(Number,'Ingrese únicamente números')
                                 .required('El campo es obligatorio (*)')
-                                .min(7, 'El DNI ingresado no es correcto')
-                                .max(8, 'El DNI ingresado no es correcto'),
                         })}
                         onSubmit={fields => {
+                            setClient(false);
                             if((fields.Buscador).length>6 && (fields.Buscador).length<9){
                                 handleBuscarCliente(fields.Buscador)
                                 console.log("dni")
@@ -271,7 +298,7 @@ function BuscarPagoServicios(props){
                                 console.log("CBU")
                             }else{
                             setDisplay(true);
-                            setCliente(false);
+                            setClient(false);
                             }
                         }}
                         render={({ errors, status, touched }) => (
@@ -286,21 +313,21 @@ function BuscarPagoServicios(props){
                             </Form>
                          )}
                         />
-                        {clienteBuscado && (
+                        {client && (
                         <div className={classes.title1}>
                             <h7 >Nombre: </h7>{clienteBuscado.nombre}<br />
                             <h7>Apellido: </h7> {clienteBuscado.apellido} <br />
                             <h7 >DNI: </h7>{clienteBuscado.dni}<br />
                             <h7>CUIT: </h7>{clienteBuscado.cuit}<br />
-                            <h7>Cuenta/s: </h7><br />
                             <form>
                                 <h7>Seleccione una cuenta: </h7>
                                 <select
-                                    onChange={(event) => handleResumen(event.target.value)}
+                                    onChange={(event) => changeAccount(event.target.value)}
                                     value={currentAccount}
                                 >
                                     <option value="">Seleccione una cuenta</option>
-                                {cuenta.map((cuentas,i) => <option key={i} value={i} label={cuentas.numero_cuenta} />)}
+                                    <option value={clienteBuscado.cuentas.c1.numero_cuenta}>{clienteBuscado.cuentas.c1.numero_cuenta}</option>
+                                    {displayCajaahorro && (<option value={clienteBuscado.cuentas.c2.numero_cuenta}>{clienteBuscado.cuentas.c2.numero_cuenta}</option>)}
                                 </select>
                             </form>
                                 {displayAccount && (
@@ -313,13 +340,9 @@ function BuscarPagoServicios(props){
                             codigo: Yup.string()
                                 .matches(Number,'Ingrese únicamente números')
                                 .required('El campo es obligatorio (*)')
-                                .min(10, 'El código de pago ingresado no es correcto')
-                                .max(15, 'El código de pago ingresado no es correcto'),
                         })}
                         onSubmit={fields => {
-                            
                             buscarFactura(fields.codigo)
-                            
                         }}
                         render={({ errors, status, touched }) => (
                             <Form>

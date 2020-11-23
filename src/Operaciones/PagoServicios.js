@@ -5,56 +5,119 @@ import history from './../history';
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import Modal from 'react-bootstrap/Modal';
+import axios from 'axios';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import moment from 'moment';
+import Checkbox from '@material-ui/core/Checkbox';
+
 function PagoServicios (props){
-    const cliente = useState(props.location.cliente);
-    const facturas = useState(props.location.facturasObtenidas)
-    const saldoCliente = useState(props.location.saldoCliente)
-    const numeroCuenta = useState(props.location.numeroCuentaSeleccionada)
-    const codigoPago = useState(props.location.codigoPago)
-    const[pagar,setPagar]=useState(0);
+    const [cliente,setCliente] = useState(props.location.state);
+    const [codigoPago, setCodigoPago] = useState(props.location.codigoPago);
+    console.log(cliente);
+    console.log(codigoPago);
+    const[pagar,setPagar]=useState([]);
     const [show, setShow] = useState(false);
+    const [showno, setShowno] = useState(false);
         const handleClose = () =>{
             setShow(false);
             history.push({
                 pathname: '/BuscarPagoServicios',
                 state:JSON.parse(localStorage.getItem('user')) })
         }
+        const handleClosed = () =>{
+            setShow(false);
+        }
         const handleShow = () => setShow(true);
     const [facturaState, setFacturaState] = useState([]);
     var miArray = new Array();
     const numRows = facturaState.length
     const numRowss=miArray.length
-    const onClick= () =>{
-        var sum=0;
-        for (let i = 0; i < numRows; ++i) {
-            if(facturaState[i].select === true){
-                setPagar(parseInt(pagar)+facturaState[i].cantidad)
-                sum=sum+facturaState[i].cantidad
-                const facturas={
-                    factura_id:(facturaState[i].factura_id),
-                    estado: (facturaState[i].estado),
-                    vencimiento: (facturaState[i].fechav),
-                    cantidad: (facturaState[i].cantidad)
-                }
-                miArray[i]=(facturaState[i])
-            }
-        }
-        console.log(miArray.length)
-        if(sum>parseInt(saldoCliente)){
-            setDisplay(true)
-        }else{
-            //setSaldo(parseInt(saldo)-sum)
-            setDisplay(false)
-            for (let i = 0; i < miArray.length; ++i) {
-                facturaState[i].estado="Pagada"
-            }
-            setShow(true)
-    }
-}
-
+    const handleChanged = (event) => {
+        setChecked(event.target.checked);
+      };
     const [display, setDisplay]=useState(false);
     const [displayFac, setDisplayFac]=useState(false);
+    const [facturaSelectEstado] = useState([]);
+    const [facturasIdPagar] = useState([]);
+    var facturasImporte = 0;
+    var importeFacturaParse = 0;
+    const click = (numero,fact,fecha,importe, index) =>{
+        console.log("factura select estado: " + facturaSelectEstado[index])
+        if (facturaSelectEstado[index] === false){
+            facturaSelectEstado[index] = true
+            facturasIdPagar.push(numero);
+            importeFacturaParse = parseFloat(importe)
+            facturasImporte += importeFacturaParse
+        } else if (facturaSelectEstado[index] === true){
+            facturaSelectEstado[index] = false
+            for( var i = 0; i < facturasIdPagar.length; i++){ 
+                if (facturasIdPagar[i] === numero) {
+                    facturasIdPagar.splice(i, 1); 
+                }
+             }
+            importeFacturaParse = parseFloat(importe)
+            facturasImporte -= importeFacturaParse
+        }else if (facturaSelectEstado[index] === undefined){
+            facturaSelectEstado[index] = true
+            facturasIdPagar.push(numero);
+            importeFacturaParse = parseFloat(importe)
+            facturasImporte += importeFacturaParse
+        }
+        console.log("estado checkbox: " + facturaSelectEstado, "ids: " + facturasIdPagar,"importe: " + facturasImporte);
+    }
 
+    const pagarServicio = () => {
+        console.log(facturasIdPagar)
+        const data={"dni":cliente.dni,"facturas_ids": facturasIdPagar, "numero_cuenta": cliente.select.numero_cuenta, "cantidad": facturasImporte}
+        axios.post(`https://integracion-banco.herokuapp.com/transacciones/banco/pagar_servicio`,
+        data,
+        {
+            headers: {
+                Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+            }
+        })
+        .then(function (response) {
+            console.log(response) 
+            setShow(true)
+            setShowno(false)
+        })
+        .catch(function (error) {
+            setShowno(true)
+            setShow(false)
+            console.log(error.message);
+        });
+    }
+
+    useEffect(() => {
+        getFacturas();
+      }, []);
+
+      const getFacturas = () => {
+         
+        axios.get('https://integracion-banco.herokuapp.com/facturas/'+codigoPago+'', {
+        headers: {
+            Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('token')) //the token is a variable which holds the token
+          }
+        }).then(function (response) {
+            let temp=[];
+            for (let i = 0; i < response.data.facturas.length; ++i) {
+                var tempi=[]
+                tempi.push(response.data.facturas[i].id,response.data.facturas[i].numero_factura, response.data.facturas[i].fecha_vencimiento, response.data.facturas[i].importe, response.data.facturas[i].fecha_pagado);
+                temp.push(tempi);
+            }
+        setPagar(temp)
+        console.log(pagar)
+        })
+        .catch(function (error) {
+            console.log(error);
+     });
+    }
     const useStyles = makeStyles((theme) => ({
         container: {
           display: 'flex',
@@ -81,6 +144,7 @@ function PagoServicios (props){
         }, 
       }));
     const Number = /^[0-9]+$/;
+    const [checked, setChecked] = useState(false);
     const classes = useStyles();
         return (
             <div className="Modificar">
@@ -91,8 +155,8 @@ function PagoServicios (props){
                 <Card className="col-sm-6 col-md-4 offset-md-4 col-lg-4 offset-lg-4 ml-6">
                     <div className={classes.modify1}>
                     <div className={classes.title1}>
-                        <h4>Cuenta: </h4><h5>{numeroCuenta}</h5>
-                        <h4>Su Saldo: </h4><h5>$ {saldoCliente}{/* numeroCuenta == cliente.cuentas.c1.numero_cuenta ? cliente.cuentas.c1.saldo : cliente.cuentas.c2.saldo*/} </h5>
+                        <h4>Cuenta: </h4><h5>{cliente.select.numero_cuenta}</h5>
+                        <h4>Su Saldo: </h4><h5>$ {parseFloat(cliente.select.saldo)}</h5>
                         <h4>Código de pago electrónico: </h4><h5>{codigoPago}</h5>
                     </div>
                     </div>
@@ -101,59 +165,38 @@ function PagoServicios (props){
                     {displayFac && (
                         <Alert severity="error">Una de las facturas seleccionadas ya se encuentra pagada</Alert>
                     )}
-                    <Button onClick={onClick} style ={{backgroundColor:"#BF6D3A", color:"white", marginTop:"15px"}}>Realizar pago</Button>
+                    <Button onClick={() => pagarServicio()} style ={{backgroundColor:"#BF6D3A", color:"white", marginTop:"15px"}}>Realizar pago</Button>
                 </Card>
-                <table className="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th scope="col">
-                        <input
-                            type="checkbox"
-                            onChange={e => {
-                            let checked = e.target.checked;
-                            setFacturaState(
-                                facturaState.map(d => {
-                                d.select = checked;
-                                return d;
-                                })
-                            );
-                            }}
-                        ></input>
-                        </th>
-                        <th scope="col">Número de factura</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Fecha de vencimiento</th>
-                        <th scope="col">Cantidad</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {facturaState.map((d, i) => (
-                        <tr key={d.id}>
-                        <th scope="row">
-                            <input
-                            onChange={event => {
-                                let checked = event.target.checked;
-                                setFacturaState(
-                                facturaState.map(data => {
-                                    if (d.id === data.id) {
-                                    data.select = checked;
-                                    }
-                                    return data;
-                                })
-                                );
-                            }}
-                            type="checkbox"
-                            checked={d.select}
-                            ></input>
-                        </th>
-                        <td>{d.factura_id}</td>
-                        <td>{d.estado}</td>
-                        <td>{d.fechav}</td>
-                        <td>$ {d.cantidad}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                <TableContainer component={Paper}>
+            <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                <TableRow>
+                    <TableCell align="left">Seleccione la/s factura/s a pagar</TableCell>
+                    <TableCell align="left">Número de factura</TableCell>
+                    <TableCell align="left">Fecha de vencimiento / Pago</TableCell>
+                    <TableCell align="right">Importe</TableCell>
+                </TableRow>
+                </TableHead>
+                <TableBody>
+                {pagar.map((row,i) => (
+                    row[4] === null ? 
+                    <TableRow  onClick={() => click(row[0], row[1], row[2],row[3], i)} key={row[0]}>
+                    <TableCell align="left"><Checkbox /></TableCell>
+                    <TableCell align="left">{row[1]}</TableCell>
+                    <TableCell align="left">{moment(row[2]).format("DD-MM-YYYY")}</TableCell>
+                    <TableCell align="right">${parseFloat(row[3])}</TableCell>
+                    </TableRow>
+                    : 
+                    <TableRow  onClick={() => click(row[0], row[1], row[2],row[3], i)} key={row[0]}>
+                    <TableCell align="left"><Checkbox disabled /></TableCell>
+                    <TableCell align="left">{row[1]}</TableCell>
+                    <TableCell align="left"> Factura pagada el: {moment(row[4]).format("DD-MM-YYYY")}</TableCell>
+                    <TableCell align="right">${parseFloat(row[3])}</TableCell>
+                    </TableRow>
+                ))}
+                </TableBody>
+            </Table>
+            </TableContainer>
                 </div>
             </div>
             <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={show} onHide={handleClose} >
@@ -162,7 +205,19 @@ function PagoServicios (props){
             </Modal.Header>
             <Modal.Body>
                 <Alert severity="success">El pago ha sido realizado exitosamente</Alert>
-                <Alert severity="warning">Su nuevo saldo es de $ {saldoCliente}</Alert>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>
+                Cerrar
+            </Button>
+            </Modal.Footer>
+            </Modal>
+            <Modal size="lg" size="lg" style={{maxWidth: '1600px'}}show={showno} onHide={handleClosed} >
+            <Modal.Header closeButton>
+            <Modal.Title>Pago NO realizado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Alert severity="warning">El pago no se ha podido realizar</Alert>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>

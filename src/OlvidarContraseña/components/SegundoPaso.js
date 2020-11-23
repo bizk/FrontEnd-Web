@@ -85,7 +85,7 @@ export default function SegundoPaso(props) {
     const handleClose = () =>{
       setShow(false);
       history.push({
-          pathname: '/Home',
+          pathname: '/',
       })
     }
     const [display, setDisplay]=useState(false);
@@ -98,7 +98,7 @@ export default function SegundoPaso(props) {
             "dni": dni,
             "nombre_usuario":usuario,
             "clave":contraseña,
-            "codigo":token
+            "codigo_autorizacion":token
         })
         .then(function (response) {
             setDisplay(false);
@@ -189,7 +189,7 @@ export default function SegundoPaso(props) {
             <Modal.Title>Recuperar contraseña</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Alert severity="success">Se ha reestablecido correctamente la contraseña.</Alert>
+                <Alert severity="success">Se ha restablecido correctamente la contraseña.</Alert>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}  style={{backgroundColor: "#BF6D3A"}}>

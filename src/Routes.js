@@ -17,6 +17,8 @@ import ModificarCliente from "./Clientes/ModificarCliente";
 import BuscarCrearCuenta from "./Cuentas/BuscarCrearCuenta";
 import PagoServicios from "./Operaciones/PagoServicios";
 import ResumenCuenta from "./Cuentas/ResumenCuenta";
+import MenuPagoServicios from "./Operaciones/MenuPagoServicios";
+import PagoServiciosEfectivo from "./Operaciones/PagoServiciosEfectivo";
 export default class Routes extends Component {
     render() {
         return (
@@ -37,6 +39,9 @@ export default class Routes extends Component {
                     <Route path="/BuscarDepositoTerceros" component={BuscarDepositoTerceros} />
                     <Route path="/BuscarPagoServicios" component={BuscarPagoServicios} />
                     <Route path="/PagoServicios" component={PagoServicios} />
+                    <Route path="/MenuPagoServicios" component={MenuPagoServicios} />
+                    <Route path="/PagoServiciosEfectivo" component={PagoServiciosEfectivo} />
+
                 </Switch>
             </Router>
         )
