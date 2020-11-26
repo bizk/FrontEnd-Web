@@ -26,7 +26,7 @@ function Cobranza () {
 		  setCuentas(result.data.cuentas)
 		} 
 	  fetchData()
-},[cuenta]);
+},[]);
 
 	const change = () =>{
 

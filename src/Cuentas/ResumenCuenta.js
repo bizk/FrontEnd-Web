@@ -34,7 +34,7 @@ function ResumenCuenta (props){
             .catch(function (error) {
               console.log(error);
             });
-    });
+    },[]);
         var today = new Date(),
         date = today.getDate()+ '-' + (today.getMonth() + 1)+ '-' +today.getFullYear();
         const useStyles=makeStyles((theme) => ({

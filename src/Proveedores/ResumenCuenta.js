@@ -77,7 +77,7 @@ function ResumenCuenta (props){
 		  setCuentas(result.data.cuentas)
 		} 
 	  fetchData()
-    },[cuenta]);
+    },[]);
 
     const handleResumen = (index) => {       
       /*   axios.get('https://integracion-banco.herokuapp.com/cuentas/'+(cuenta[index].numero_cuenta)+'/resumen', {
