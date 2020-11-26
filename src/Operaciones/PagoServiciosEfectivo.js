@@ -162,7 +162,6 @@ function PagoServiciosEfectivo (){
                         }}
                         validationSchema={Yup.object().shape({
                             codigo: Yup.string()
-                                .matches(Number,'Ingrese únicamente números')
                                 .required('El campo es obligatorio (*)')
                         })}
                         onSubmit={fields => {
